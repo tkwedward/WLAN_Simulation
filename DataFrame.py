@@ -1,13 +1,15 @@
 import random
 
 class DataFrame(object):
-    def __init__(self, type, created_time: float):
+    def __init__(self, type, created_time: float, sender, receiver):
         """
         type: ACK / data
         created_time: The time the dataframe is created
         """
 
         self.type = type
+        self.sender = sender
+        self.receiver = receiver
         self.created_time = created_time
         self.process_time = 0
         self.departure_time = 0

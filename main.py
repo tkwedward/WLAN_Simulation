@@ -1,8 +1,10 @@
 from configuration_file import NUMBER_OF_HOST
 from Host import Host
+from Channel import Channel
+from GEL import Global_Event_List
 
-HOST_ARRAY = []
+GEL = Global_Event_List()
+print(GEL)
 
-for n in range(NUMBER_OF_HOST):
-    HOST_ARRAY.append(Host())
+
 
