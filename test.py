@@ -4,7 +4,7 @@ from GEL import Global_Event_List
 from Event import ArrivalDataFrameEvent
 class MyTestCase(unittest.TestCase):
 
-    def test_arrival_of_data_from_different_host_take_action(self):
+    def test_successful_transfer_cycle_without_RBA(self):
         """
         To test if an arrival dataframe event can take effect smoothly
         :return:
@@ -58,10 +58,10 @@ class MyTestCase(unittest.TestCase):
 
         gel_event_11 = gel.getNextEvent()
         gel_event_11.takeEffect(gel)
-        # self.assertEqual(gel_event_11.name, "Departure Event, ack")
+        self.assertEqual(gel_event_11.name, "success transfer")
 
 
-        gel.draw_event_timeline()
+        # gel.draw_event_timeline()
 
 
 

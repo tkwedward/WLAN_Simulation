@@ -29,7 +29,6 @@ class Channel(object):
             :return:
             """
             arrival_time = event_time
-            print("))))))", type)
             df.receiver.createArrivalDataFrameEvent(arrival_time, df.receiver, type, df)
 
 

@@ -1,6 +1,6 @@
 from Buffer import Buffer
 from DataFrame import DataFrame
-from Event import ArrivalDataFrameEvent, DepartureEvent, SenseChannelEvent, DiscardEvent, PushToChannelEvent, AckExpectedEvent
+from Event import ArrivalDataFrameEvent, DepartureEvent, SenseChannelEvent, DiscardEvent, PushToChannelEvent, AckExpectedEvent, successTransferEvent
 from Distribution import negative_exponential_distribution
 class Host(object):
     def __init__(self, number, gel):
@@ -14,14 +14,14 @@ class Host(object):
         self.DIFS = 0.1                  # 0.10 ms
         self.SIFS = 0.05                 # 0.05 ms
 
-    def random_backoff(self, dataframe)-> float:
+    def random_backoff(self, df)-> float:
         if n > 10:
             n = 10
         wait_time = random.randint(0, 2 ** n - 1) * 512 / CHANNEL_RATE * 1000
         return wait_time
 
-    def addToBuffer(self, dataframe):
-        self.buffer.append(dataframe)
+    def addToBuffer(self, df):
+        self.buffer.append(df)
 
     def createArrivalDataFrameEvent(self, event_time, receiver, name, df = None):
         """
@@ -40,6 +40,7 @@ class Host(object):
 
         success = None
         failure = None
+        arrival = None
 
         if name == "internal DF":
             new_event_time = event_time + negative_exponential_distribution(self.arrivalRate)
@@ -51,6 +52,7 @@ class Host(object):
                 pass
 
             arrival = ArrivalDataFrameEvent(name, new_event_time, sender, receiver, df, success, failure)
+            self.GEL.addEvent(arrival)
 
         elif name == "external DF":
             ack_time = event_time
@@ -64,7 +66,6 @@ class Host(object):
                 ack_time = event_time
                 :return:
                 """
-
                 self.createSenseChannelEvent(ack_time, ack, "ack, stage 0")
             def failure():
                 """
@@ -74,12 +75,18 @@ class Host(object):
                 pass
 
             arrival = ArrivalDataFrameEvent(name, ack_time, sender, receiver, df, success, failure)
+            self.GEL.addEvent(arrival)
 
         elif name == "ack":
-            pass
+            success_time = event_time + 0
+            def success():
+                print("the event success")
+
+            success_event = successTransferEvent(success_time, df, success, failure)
+            self.GEL.addEvent(success_event)
 
 
-        self.GEL.addEvent(arrival)
+
 
     def receiveDataframeEvent(self, event_time, df, type):
         if name == "internal DF":
@@ -162,7 +169,7 @@ s
             if success, wait SIFS and then sense again, if it is still idle, then send the ACK immediately
             
             """
-            print("ack, stage 1")
+
             def success():
                 sense_event_time = event_time
                 self.createPushToChannelEvent(sense_event_time, df, "ack")
@@ -174,7 +181,7 @@ s
         senseChannelEvent = SenseChannelEvent(sense_event_time, type, df, success, failure)
         self.GEL.addEvent(senseChannelEvent)
 
-    def createPushToChannelEvent(self, event_time, df, type = "df"):
+    def createPushToChannelEvent(self, event_time, df, type = "external DF"):
         """
         pushEventTime = event_time + 0
         """

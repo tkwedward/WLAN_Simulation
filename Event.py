@@ -9,8 +9,11 @@ class Event(object):
         self.previousEvent = None
         self.nextEvent = None
 
-    def takeEffect(self):
-        pass
+    def takeEffect(self, gel):
+        if gel.channel.status == "idle":
+            self.success()
+        else:
+            self.failure()
 
     def __str__(self):
         return self.name
@@ -50,20 +53,10 @@ class SenseChannelEvent(Event):
     def __init__(self, event_time, type, df, success, failure):
         super().__init__(event_time)
         self.type = type
-        print(self.type)
         self.name = "sense channel, "+ type
         self.dataframe = df
         self.success = success
         self.failure = failure
-
-
-    def takeEffect(self, gel):
-        if gel.channel.status == "idle":
-
-            self.success()
-        else:
-            self.failure()
-
 
 class DiscardEvent(Event):
     def __init__(self, event_time, name):
@@ -99,7 +92,7 @@ class DepartureEvent(Event):
         self.dataframe = df
         self.success = success
         self.failure = failure
-        print(success, failure)
+
 
     def takeEffect(self, gel):
         if gel.channel.status == "busy":
@@ -108,8 +101,6 @@ class DepartureEvent(Event):
         else:
             # pass to discard the item
             self.failure()
-            pass
-
 
 
 class AckExpectedEvent(Event):
@@ -125,23 +116,20 @@ class AckExpectedEvent(Event):
         self.success = success
         self.failure = failure
 
-    def event_take_action(self):
-        pass
-
-
-class sendACKEvent(Event):
-    def __init__(self, event_time, packet=None):
-        super().__init__(event_time, packet)
-        self.name = "ACK"
-
-    def event_take_action(self):
-        pass
 
 class CollisionEvent(Event):
     def __init__(self, event_time, packet=None):
         super().__init__(event_time, packet)
         self.name = "Collision"
 
-    def event_take_action(self):
-        pass
+class successTransferEvent(Event):
+    def __init__(self, event_time, df, success, failure):
+        super().__init__(event_time)
+        self.name = "success transfer"
+        self.dataframe = df
+        self.success = success
+        self.failure = failure
+
+    def takeEffect(self, gel):
+        self.success()
 
