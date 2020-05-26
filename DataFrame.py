@@ -1,7 +1,7 @@
 import random
 
 class DataFrame(object):
-    def __init__(self, type, created_time: float, sender, receiver):
+    def __init__(self, type, created_time: float, sender, receiver, id, origin):
         """
         type: ACK / data
         created_time: The time the dataframe is created
@@ -14,6 +14,9 @@ class DataFrame(object):
         self.process_time = 0
         self.departure_time = 0
         self.number_of_collision = 0
+        self.id = id
+        self.origin = origin
+
         # self.channel =
 
         if type == "ACK":

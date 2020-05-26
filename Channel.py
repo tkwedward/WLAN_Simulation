@@ -42,6 +42,6 @@ class Channel(object):
 
 
         event_time = event_time + df.size / self.GEL.channel.rate
-        departure = DepartureEvent(event_time, df, success, failure)
+        departure = DepartureEvent(event_time, df, success, failure, df.origin)
         self.GEL.addEvent(departure)
 

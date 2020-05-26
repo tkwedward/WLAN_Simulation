@@ -10,10 +10,9 @@ class MyTestCase(unittest.TestCase):
         :return:
         """
         gel = Global_Event_List()
-
-        # initialize the event
         gel.host_array[0].createArrivalDataFrameEvent(gel.current_time, gel.host_array[2], "internal DF")
 
+        # initialize the event
         gel_event_1 = gel.getNextEvent()
         gel_event_1.takeEffect(gel)
         self.assertEqual(gel_event_1.name, "internal DF")
@@ -59,11 +58,36 @@ class MyTestCase(unittest.TestCase):
         gel_event_11 = gel.getNextEvent()
         gel_event_11.takeEffect(gel)
         self.assertEqual(gel_event_11.name, "success transfer")
-
-
         # gel.draw_event_timeline()
 
 
+
+    def test_successful_transfer_TOTAL_PACKET_for_One_HOST(self):
+        gel = Global_Event_List()
+        gel.host_array[0].createArrivalDataFrameEvent(gel.current_time, gel.host_array[2], "internal DF")
+
+        while gel.packet_counter <= gel.TOTAL_PACKET:
+            # print(gel.packet_counter)
+            gel_event = gel.getNextEvent()
+            gel_event.takeEffect(gel)
+        # gel.draw_event_timeline()
+        # self.assertEqual(gel_event_11.name, "success transfer")
+
+    def test_successful_transfer_TOTAL_PACKET_for_TWO_HOST(self):
+        gel = Global_Event_List()
+        gel.TOTAL_PACKET = 10
+        gel.host_array[1].createArrivalDataFrameEvent(gel.current_time, gel.host_array[3], "internal DF")
+        gel.host_array[0].createArrivalDataFrameEvent(gel.current_time, gel.host_array[2], "internal DF")
+
+        gel_event = True
+        try:
+            while gel_event:
+                gel_event = gel.getNextEvent()
+                gel_event.dataframe.globalID = gel.packet_counter
+                gel_event.takeEffect(gel)
+        except:
+            gel.draw_event_timeline()
+            print("error occur")
 
 
 

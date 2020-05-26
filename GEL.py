@@ -6,8 +6,6 @@ from Distribution import negative_exponential_distribution
 from Event import Event
 from collections import deque
 
-
-
 class Global_Event_List(object):
     def __init__(self, ARRIVE_RATE = 0.1, SERVICE_RATE = 11e6, TOTAL_PACKET=1000, NUMBER_OF_HOST = 10):
         self.channel = Channel(SERVICE_RATE, self)
@@ -128,10 +126,8 @@ class Global_Event_List(object):
         # timelineText = []
         for i, event in enumerate(self.timeLineEvent):
             # timelineText.append(f"{i}. {event.name}")
-            print(f"{i+1}. {event.name}, {event.event_time}")
+            print(f"{i+1}. {event.origin} packet {event.dataframe.id} ({event.dataframe.globalID}), {event.name}, {event.event_time}")
 
-
-        # print()
     #
     #
     # def statistic(self)-> None:
