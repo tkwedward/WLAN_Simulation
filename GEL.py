@@ -10,7 +10,7 @@ from collections import deque
 
 class Global_Event_List(object):
     def __init__(self, ARRIVE_RATE = 0.1, SERVICE_RATE = 11e6, TOTAL_PACKET=1000, NUMBER_OF_HOST = 10):
-        self.channel = Channel(SERVICE_RATE)
+        self.channel = Channel(SERVICE_RATE, self)
         self.host_array = [ Host(n, self) for n in range(NUMBER_OF_HOST) ]
         self._previousEvent = None
 

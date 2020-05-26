@@ -2,7 +2,8 @@ from Distribution import negative_exponential_distribution
 from Event import DepartureEvent
 
 class Channel(object):
-    def __init__(self, rate):
+    def __init__(self, rate, gel):
+        self.GEL = gel
         self.status = "idle"
         self.rate = rate # 11Mbps
         self.status_array = [("idle", 0)]
@@ -19,3 +20,28 @@ class Channel(object):
 
     def transmit_df(self, df):
         pass
+
+    def createDepartureEvent(self, event_time, df):
+        def success():
+            """
+            If sucess, then schedule the arrival event in the receiver
+            arrival_time = event_time
+            :return:
+            """
+            arrival_time = event_time
+            df.receiver.createArrivalDataFrameEvent(arrival_time, df.receiver, "external DF", df)
+
+
+
+        def failure():
+            """
+            no failure
+            :return:
+            """
+            pass
+
+
+        event_time = event_time + df.size / self.GEL.channel.rate
+        departure = DepartureEvent(event_time, df, success, failure)
+        self.GEL.addEvent(departure)
+
