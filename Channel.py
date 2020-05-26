@@ -21,7 +21,7 @@ class Channel(object):
     def transmit_df(self, df):
         pass
 
-    def createDepartureEvent(self, event_time, df):
+    def createDepartureEvent(self, event_time, df, type = "external DF"):
         def success():
             """
             If sucess, then schedule the arrival event in the receiver
@@ -29,7 +29,8 @@ class Channel(object):
             :return:
             """
             arrival_time = event_time
-            df.receiver.createArrivalDataFrameEvent(arrival_time, df.receiver, "external DF", df)
+            print("))))))", type)
+            df.receiver.createArrivalDataFrameEvent(arrival_time, df.receiver, type, df)
 
 
 

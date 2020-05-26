@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
 
         gel_event_4 = gel.getNextEvent()
         gel_event_4.takeEffect(gel)
-        self.assertEqual(gel_event_4.name, "push dataframe to channel Event")
+        self.assertEqual(gel_event_4.name, "push data to channel")
 
         gel_event_5 = gel.getNextEvent()
         gel_event_5.takeEffect(gel)
@@ -50,10 +50,15 @@ class MyTestCase(unittest.TestCase):
 
         gel_event_9 = gel.getNextEvent()
         gel_event_9.takeEffect(gel)
-        self.assertEqual(gel_event_9.name, "push dataframe to channel Event")
+        self.assertEqual(gel_event_9.name, "push ack to channel")
 
         gel_event_10 = gel.getNextEvent()
         gel_event_10.takeEffect(gel)
+        self.assertEqual(gel_event_10.name, "Departure Event, ack")
+
+        gel_event_11 = gel.getNextEvent()
+        gel_event_11.takeEffect(gel)
+        # self.assertEqual(gel_event_11.name, "Departure Event, ack")
 
 
         gel.draw_event_timeline()

@@ -75,6 +75,9 @@ class Host(object):
 
             arrival = ArrivalDataFrameEvent(name, ack_time, sender, receiver, df, success, failure)
 
+        elif name == "ack":
+            pass
+
 
         self.GEL.addEvent(arrival)
 
@@ -162,7 +165,7 @@ s
             print("ack, stage 1")
             def success():
                 sense_event_time = event_time
-                self.createPushToChannelEvent(sense_event_time, df)
+                self.createPushToChannelEvent(sense_event_time, df, "ack")
 
         elif type == "Countdown":
             pass
@@ -171,11 +174,11 @@ s
         senseChannelEvent = SenseChannelEvent(sense_event_time, type, df, success, failure)
         self.GEL.addEvent(senseChannelEvent)
 
-    def createPushToChannelEvent(self, event_time, df):
+    def createPushToChannelEvent(self, event_time, df, type = "df"):
         """
         pushEventTime = event_time + 0
-
         """
+
 
         def success():
             """
@@ -183,17 +186,21 @@ s
             new_event_time = event_time + transmission_time_df + transmission_time_ACK
             :return:
             """
-            departure_time = event_time + df.size/self.channel.rate
-            self.channel.createDepartureEvent(departure_time, df)
+            departure_time = event_time + df.size / self.channel.rate
 
-            expected_ACK_time = event_time + (df.size + 64) / self.channel.rate + self.senseTime * 2 + 1e-9
-            self.createExpectAckEvent(expected_ACK_time, df)
+            self.channel.createDepartureEvent(departure_time, df, type)
 
+            if type == "df":
+                expected_ACK_time = event_time + (df.size + 64) / self.channel.rate + self.senseTime * 2 + 1e-9
+                self.createExpectAckEvent(expected_ACK_time, df)
+            elif type == "ack":
+                """do not need to pass back ack if the packet is an ack"""
+                pass
         def failure():
             pass
 
         push_event_time = event_time + 0
-        pushEvent = PushToChannelEvent(push_event_time, "push dataframe to channel Event", df, success, failure)
+        pushEvent = PushToChannelEvent(push_event_time, f"push {df.type} to channel", df, success, failure)
         self.GEL.addEvent(pushEvent)
 
 
