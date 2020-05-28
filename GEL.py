@@ -86,7 +86,10 @@ class Global_Event_List(object):
         """
         To sort the event list
         """
-        self.event_list = deque(sorted(self.event_list, key=lambda x: x.event_time))
+        try:
+            self.event_list = deque(sorted(self.event_list, key=lambda x: x.event_time))
+        except:
+            print(self.event_list)
 
     def addEvent(self, event: Event) -> None:
         """
@@ -126,7 +129,7 @@ class Global_Event_List(object):
         # timelineText = []
         for i, event in enumerate(self.timeLineEvent):
             # timelineText.append(f"{i}. {event.name}")
-            print(f"{i+1}. {event.origin} packet {event.dataframe.id} ({event.dataframe.globalID}), {event.name}, {event.event_time}")
+            print(f"{i+1}. {event.description()}")
 
     #
     #

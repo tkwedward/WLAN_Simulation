@@ -1,5 +1,5 @@
 from Distribution import negative_exponential_distribution
-from Event import DepartureEvent
+from Event import DepartureEvent, ScheduleDataFrameEvent
 
 class Channel(object):
     def __init__(self, rate, gel):
@@ -29,7 +29,10 @@ class Channel(object):
             :return:
             """
             arrival_time = event_time
-            df.receiver.createArrivalDataFrameEvent(arrival_time, df.receiver, type, df)
+
+
+            arrivalEvent = ScheduleDataFrameEvent(type, arrival_time, df.sender, df.receiver, df.origin, self.GEL, df)
+            self.GEL.addEvent(arrivalEvent)
 
 
 

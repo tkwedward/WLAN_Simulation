@@ -1,7 +1,7 @@
 from Buffer import Buffer
 from DataFrame import DataFrame
 from Distribution import negative_exponential_distribution
-from Event import ArrivalDataFrameEvent, SenseChannelEvent, PushToChannelEvent, AckExpectedEvent, successTransferEvent
+from Event import ProcessDataFrameArrivalEvent, SenseChannelEvent, PushToChannelEvent, AckExpectedEvent, SuccessTransferEvent, ScheduleDataFrameEvent
 import random
 
 
@@ -33,7 +33,7 @@ class Host(object):
     def addToBuffer(self, df: DataFrame):
         self.buffer.append(df)
 
-    def createArrivalDataFrameEvent(self, event_time: float, receiver: "Host", name: str, df = None, origin = None) -> ArrivalDataFrameEvent:
+    def processArrivalDataFrame(self, event_time: float, receiver: "Host", _type: str, df = None, origin = None):
         """
         create one of the following arrival event and put it to the GEL event list
 
@@ -56,48 +56,32 @@ class Host(object):
         failure = None
         arrival = None
 
-        if name == "internal DF":
-            new_event_time = event_time + negative_exponential_distribution(self.arrivalRate)
-            df = DataFrame("data", new_event_time, sender, receiver, self.ackId, origin=self)
-            self.GEL.packet_counter += 1
-            self.ackId += 1
-            def success():
 
-                if self.GEL.packet_counter <= self.GEL.TOTAL_PACKET:
-                    next_arrival_time = new_event_time + negative_exponential_distribution(self.arrivalRate)
-                    next_df = DataFrame("data", next_arrival_time, sender, receiver, self.ackId, self)
-                    self.createArrivalDataFrameEvent(next_arrival_time, receiver, "internal DF", next_df, next_df.origin)
+        if _type == "internal DF":
+            """
+            Schedule next eventt
+            To create a sense channel event, or put it into the buffer
+            """
+            new_arrival_event = ScheduleDataFrameEvent(_type, event_time, sender, receiver, sender, self.GEL)
+            self.GEL.addEvent(new_arrival_event)
 
-                self.createSenseChannelEvent(new_event_time, df, "df, stage 0", df.origin)
-
-            def failure():
+            if self.status == "idle":
+                sense_event_time = event_time + self.senseTime
+                self.createSenseChannelEvent(sense_event_time, df, "df, stage 0", df.origin)
+            else:
                 self.buffer.insert_dataframe(df)
 
-            arrival = ArrivalDataFrameEvent(name, new_event_time, sender, receiver, df, success, failure, df.origin)
-            self.GEL.addEvent(arrival)
-
         elif name == "external DF":
+            """
+            To create a SenseChannel Event
+            """
             ack_time = event_time
-            ack_sender = self
-            ack_receiver = df.sender
-            ack = DataFrame("ack", ack_time, ack_sender, ack_receiver, df.id, df.origin)
-
+            ack = self.df
             ack.size = 64
+            self.createSenseChannelEvent(ack_time, ack, "ack, stage 0", df.origin)
 
-            def success():
-                """
-                To return an ACK to the sender
-                ack_time = event_time
-                """
-                self.createSenseChannelEvent(ack_time, ack, "ack, stage 0", df.origin)
-            def failure():
-                """
-                No failure
-                :return:
-                """
-                pass
 
-            arrival = ArrivalDataFrameEvent(name, ack_time, sender, receiver, df, success, failure, df.origin)
+            arrival = DataFrameArrivalEvent(name, ack_time, sender, receiver, df, success, failure, df.origin)
             self.GEL.addEvent(arrival)
 
         elif name == "ack":
@@ -108,7 +92,11 @@ class Host(object):
                 unacked = self.notACKedDict[df.id]
                 unacked.ACKed = True
 
-            success_event = successTransferEvent(success_time, df, success, failure, df.origin)
+                if len(self.origin.buffer) != 0:
+                    next_df = self.origin.buffer.popleft()
+                    self.createSenseChannelEvent(event_time, next_df, "df, stage 0", df.origin)
+
+            success_event = SuccessTransferEvent(success_time, df, success, failure, df.origin)
             self.GEL.addEvent(success_event)
 
 
@@ -197,8 +185,6 @@ class Host(object):
             """
                 5) Countdown        (not finished)
             """
-
-
             pass
 
         sense_event_time = event_time
