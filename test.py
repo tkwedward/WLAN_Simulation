@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         :return:
         """
         gel = Global_Event_List()
-        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2], gel.host_array[0], gel)
+        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2], gel)
         gel.addEvent(initialEvent)
 
         # initialize the event
@@ -65,33 +65,46 @@ class MyTestCase(unittest.TestCase):
 
     def test_successful_transfer_TOTAL_PACKET_for_One_HOST(self):
         gel = Global_Event_List()
-        gel.TOTAL_PACKET = 3
-        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2],
-                                              gel.host_array[0], gel)
+        gel.TOTAL_PACKET = 5
+        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2], gel)
         gel.addEvent(initialEvent)
 
         while gel.packet_counter <= gel.TOTAL_PACKET:
             # print(gel.packet_counter)
             gel_event = gel.getNextEvent()
-            gel_event.takeEffect(gel)
-        gel.draw_event_timeline()
+            if gel_event == None:
+                break
+            else:
+                gel_event.takeEffect(gel)
+        # gel.draw_event_timeline()
         # self.assertEqual(gel_event_11.name, "success transfer")
 
-    # def test_successful_transfer_TOTAL_PACKET_for_TWO_HOST(self):
-    #     gel = Global_Event_List()
-    #     gel.TOTAL_PACKET = 10
-    #     gel.host_array[1].createArrivalDataFrameEvent(gel.current_time, gel.host_array[3], "internal DF")
-    #     gel.host_array[0].createArrivalDataFrameEvent(gel.current_time, gel.host_array[2], "internal DF")
-    #
-    #     gel_event = True
-    #     try:
-    #         while gel_event:
-    #             gel_event = gel.getNextEvent()
-    #             gel_event.dataframe.globalID = gel.packet_counter
-    #             gel_event.takeEffect(gel)
-    #     except:
-    #         gel.draw_event_timeline()
-    #         print("error occur")
+    def test_successful_transfer_TOTAL_PACKET_for_TWO_HOST(self):
+        gel = Global_Event_List()
+        gel.TOTAL_PACKET = 20
+        for x in gel.host_array:
+            initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, x, gel.getRandomHost(x), gel)
+            gel.addEvent(initialEvent)
+        #
+        # num = 100
+        # for x in range(0, num):
+        #     gel_event = gel.getNextEvent()
+        #     gel_event.dataframe.globalID = gel.packet_counter
+        #     print(gel_event)
+        #     gel_event.takeEffect(gel)
+        #
+        # gel.draw_event_timeline()
+
+        gel_event = True
+        try:
+            while gel_event:
+                gel_event = gel.getNextEvent()
+                gel_event.dataframe.globalID = gel.packet_counter
+                gel_event.takeEffect(gel)
+
+        except Exception as e:
+            gel.draw_event_timeline()
+            print(e)
 
 
 

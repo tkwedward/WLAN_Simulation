@@ -3,7 +3,7 @@ import random
 class DataFrame(object):
     def __init__(self, type, created_time: float, sender, receiver, id, origin):
         """
-        type: ACK / data
+        type: ack / data
         created_time: The time the dataframe is created
         """
 

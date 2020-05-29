@@ -30,8 +30,8 @@ class Channel(object):
             """
             arrival_time = event_time
 
-
-            arrivalEvent = ScheduleDataFrameEvent(type, arrival_time, df.sender, df.receiver, df.origin, self.GEL, df)
+            # def __init__(self, _type, event_time, sender, receiver, gel, origin=None, df=None):
+            arrivalEvent = ScheduleDataFrameEvent(type, arrival_time, df.sender, df.receiver, self.GEL, df.origin, df)
             self.GEL.addEvent(arrivalEvent)
 
 

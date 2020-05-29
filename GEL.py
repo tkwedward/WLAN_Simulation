@@ -4,6 +4,7 @@ from Buffer import Buffer
 from Host import Host
 from Distribution import negative_exponential_distribution
 from Event import Event
+import random
 from collections import deque
 
 class Global_Event_List(object):
@@ -78,9 +79,13 @@ class Global_Event_List(object):
         """
         To get the next event from the event list"""
         self.sort_event_list()
-        nextEvent = self.event_list.popleft()
-        self.timeLineEvent.append(nextEvent)
-        return nextEvent
+        if len(self.event_list) > 0:
+            nextEvent = self.event_list.popleft()
+            self.timeLineEvent.append(nextEvent)
+
+            return nextEvent
+        else:
+            print("no more events")
 
     def sort_event_list(self) -> None:
         """
@@ -98,6 +103,12 @@ class Global_Event_List(object):
         :return:
         """
         self.event_list.append(event)
+
+    def getRandomHost(self, initializer):
+        result_list = list(filter(lambda x: x!= initializer, self.host_array))
+        target_num = random.randint(0, len(result_list)-1)
+        return result_list[target_num]
+
 
     def __repr__(self):
         _event_list = [f"{event}, {event.event_time}" for event in self.event_list]
