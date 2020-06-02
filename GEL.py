@@ -142,6 +142,32 @@ class Global_Event_List(object):
             # timelineText.append(f"{i}. {event.name}")
             print(f"{i+1}. {event.description()}")
 
+
+    def calculate_throughput(self) -> float:
+        total_bytes_transferred = 0
+        for event in self.timeLineEvent: # find total number of bytes transferred in simulation
+            if event.type == "success transfer":
+                total_bytes_transferred += event.df.size
+
+        total_simulation_time = self.timeLineEvent[-1].event_time
+
+        return total_bytes_transferred/total_simulation_time
+
+
+    def calculate_average_network_delay(self) -> float:
+        trans_and_queueing_delay = 0
+        queued_events = {}
+        for event in self.timeLineEvent:    # keep track of scheduled dataframe departures
+            if event.type == "internal DF":
+                queued_events[event.df] = event.event_time
+            elif isinstance(event, DepartureEvent): # measure time from scheduled departure to actual departure (queueing and transmission delay)
+                scheduled_time = queued_events[event.df]
+                trans_and_queueing_delay += (event.event_time - scheduled_time)
+
+        throughput = calculate_throughput()
+
+        return trans_and_queueing_delay / throughput
+
     #
     #
     # def statistic(self)-> None:
