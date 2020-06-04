@@ -1,5 +1,6 @@
 from DataFrame import DataFrame
 from Channel import Channel
+from configuration_file import NUMBER_OF_HOST, ARRIVE_RATE, TOTAL_PACKET, CHANNEL_RATE
 from Buffer import Buffer
 from Host import Host
 from Distribution import negative_exponential_distribution
@@ -8,18 +9,19 @@ import random
 from collections import deque
 
 class Global_Event_List(object):
-    def __init__(self, ARRIVE_RATE = 0.1, SERVICE_RATE = 11e6, TOTAL_PACKET=1000, NUMBER_OF_HOST = 10):
-        self.channel = Channel(SERVICE_RATE, self)
+    def __init__(self, ARRIVE_RATE = ARRIVE_RATE, CHANNEL_RATE = CHANNEL_RATE, TOTAL_PACKET=TOTAL_PACKET, NUMBER_OF_HOST = NUMBER_OF_HOST):
+        self.channel = Channel(CHANNEL_RATE, self)
         self.host_array = [ Host(n, self) for n in range(NUMBER_OF_HOST) ]
         self._previousEvent = None
 
         # constants
         self.ARRIVE_RATE = ARRIVE_RATE
-        self.SERVICE_RATE = SERVICE_RATE
+        self.CHANNEL_RATE = CHANNEL_RATE
         self.TOTAL_PACKET = TOTAL_PACKET
 
         # variables and counters
         self.timeLineEvent = []
+        self.counter_array = []
         self.event_list = deque()
         self.busy_time = 0
         self.current_time = 0
@@ -132,6 +134,24 @@ class Global_Event_List(object):
     #     total_area = sum(total_number_array)
     #     return total_area/self.current_time
     #
+    def draw_event_timeline_of_packets(self, packet_number=None):
+        packets = {}
+        for x in range(0, self.packet_counter):
+            packets[x] = []
+
+        for event in self.timeLineEvent:
+            packet_global_Id = event.dataframe.global_Id
+            packets[packet_global_Id].append(event)
+
+        if packet_number == None:
+            for x in range(0, self.packet_counter):
+                for event in packets[x]:
+                    print(event.description())
+                print("=" * 100)
+        else:
+            for event in packets[packet_number]:
+                print(event.description())
+
     def draw_event_timeline(self)-> None:
         """
         To Draw all the events in in the timeLineEvent array
@@ -140,7 +160,13 @@ class Global_Event_List(object):
         # timelineText = []
         for i, event in enumerate(self.timeLineEvent):
             # timelineText.append(f"{i}. {event.name}")
-            print(f"{i+1}. {event.description()}")
+            print(f" {event.description()}")
+
+    def checkPacket(self, df_number):
+        event = next(filter(lambda event: event.dataframe.global_Id == df_number, self.timeLineEvent))
+        df = event.dataframe
+        print(f"{df.type}, {df.global_Id}, {df.size}")
+
 
 
     def calculate_throughput(self) -> float:

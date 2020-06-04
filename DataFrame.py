@@ -1,4 +1,7 @@
 import random
+from Distribution import negative_exponential_distribution
+from configuration_file import ARRIVE_RATE
+
 
 class DataFrame(object):
     def __init__(self, type, created_time: float, sender, receiver, id, origin):
@@ -6,7 +9,6 @@ class DataFrame(object):
         type: ack / data
         created_time: The time the dataframe is created
         """
-
         self.type = type
         self.sender = sender
         self.receiver = receiver
@@ -17,14 +19,22 @@ class DataFrame(object):
         self.id = id
         self.origin = origin
 
-        # self.channel =
-
         if type == "ACK":
+            # acknowledgement frame is constant in size (64 bytes).
             self.size = 64
         elif type == "data":
-            self.size = random.randint(1, 1544)
+            # The data frame length(r)(identically distributed for all nodes) is a negativeexponentially distributed random variable in the range 0 < r ≤ 1544 bytes
+            # size = 10000
+            # while size > 1544 or size < 0:
+            #     size = negative_exponential_distribution(ARRIVE_RATE)
+            self.size = 1000
+
+
 
     def calculate_delay(self):
         return self.departure_time - self.created_time
+
+    def negative_exponential_distribution(rate: float) -> float:
+        return (-1/rate) * math.log(1 - random.random())
 
 

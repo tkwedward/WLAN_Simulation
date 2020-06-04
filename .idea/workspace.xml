@@ -2,12 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c0dd3547-f44d-48dd-b057-bac32eb2b6f7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Channel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Channel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DataFrame.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataFrame.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Event.py" beforeDir="false" afterPath="$PROJECT_DIR$/Event.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GEL.py" beforeDir="false" afterPath="$PROJECT_DIR$/GEL.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Host.py" beforeDir="false" afterPath="$PROJECT_DIR$/Host.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration_file.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +41,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RunManager" selected="Python.test">
     <configuration name="DataFrame" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -172,7 +176,8 @@
       <updated>1590363669843</updated>
       <workItem from="1590363674157" duration="3120000" />
       <workItem from="1590382047701" duration="45665000" />
-      <workItem from="1590629478943" duration="19817000" />
+      <workItem from="1590629478943" duration="63276000" />
+      <workItem from="1591224458155" duration="5415000" />
     </task>
     <servers />
   </component>
@@ -184,82 +189,90 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="402" y="271" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1440.877@0.23.1440.877" timestamp="1590363719858" />
-    <state width="1398" height="230" key="GridCell.Tab.0.bottom" timestamp="1590739155790">
+    <state x="449" y="257" key="#xdebugger.XInspectDialog" timestamp="1591229359485">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="230" key="GridCell.Tab.0.bottom/0.23.1440.877@0.23.1440.877" timestamp="1590739155790" />
-    <state width="1398" height="230" key="GridCell.Tab.0.center" timestamp="1590739155790">
+    <state x="449" y="257" key="#xdebugger.XInspectDialog/0.23.1440.877@0.23.1440.877" timestamp="1591229359485" />
+    <state width="1398" height="230" key="GridCell.Tab.0.bottom" timestamp="1591230726038">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="230" key="GridCell.Tab.0.center/0.23.1440.877@0.23.1440.877" timestamp="1590739155790" />
-    <state width="1398" height="230" key="GridCell.Tab.0.left" timestamp="1590739155789">
+    <state width="1398" height="230" key="GridCell.Tab.0.bottom/0.23.1440.877@0.23.1440.877" timestamp="1591230726038" />
+    <state width="1398" height="230" key="GridCell.Tab.0.center" timestamp="1591230726038">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="230" key="GridCell.Tab.0.left/0.23.1440.877@0.23.1440.877" timestamp="1590739155789" />
-    <state width="1398" height="230" key="GridCell.Tab.0.right" timestamp="1590739155790">
+    <state width="1398" height="230" key="GridCell.Tab.0.center/0.23.1440.877@0.23.1440.877" timestamp="1591230726038" />
+    <state width="1398" height="230" key="GridCell.Tab.0.left" timestamp="1591230726037">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="230" key="GridCell.Tab.0.right/0.23.1440.877@0.23.1440.877" timestamp="1590739155790" />
-    <state width="1398" height="285" key="GridCell.Tab.1.bottom" timestamp="1590735920833">
+    <state width="1398" height="230" key="GridCell.Tab.0.left/0.23.1440.877@0.23.1440.877" timestamp="1591230726037" />
+    <state width="1398" height="230" key="GridCell.Tab.0.right" timestamp="1591230726038">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="285" key="GridCell.Tab.1.bottom/0.23.1440.877@0.23.1440.877" timestamp="1590735920833" />
-    <state width="1398" height="285" key="GridCell.Tab.1.center" timestamp="1590735920832">
+    <state width="1398" height="230" key="GridCell.Tab.0.right/0.23.1440.877@0.23.1440.877" timestamp="1591230726038" />
+    <state width="1398" height="285" key="GridCell.Tab.1.bottom" timestamp="1591229390936">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="285" key="GridCell.Tab.1.center/0.23.1440.877@0.23.1440.877" timestamp="1590735920832" />
-    <state width="1398" height="285" key="GridCell.Tab.1.left" timestamp="1590735920832">
+    <state width="1398" height="285" key="GridCell.Tab.1.bottom/0.23.1440.877@0.23.1440.877" timestamp="1591229390936" />
+    <state width="1398" height="285" key="GridCell.Tab.1.center" timestamp="1591229390936">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="285" key="GridCell.Tab.1.left/0.23.1440.877@0.23.1440.877" timestamp="1590735920832" />
-    <state width="1398" height="285" key="GridCell.Tab.1.right" timestamp="1590735920833">
+    <state width="1398" height="285" key="GridCell.Tab.1.center/0.23.1440.877@0.23.1440.877" timestamp="1591229390936" />
+    <state width="1398" height="285" key="GridCell.Tab.1.left" timestamp="1591229390936">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state width="1398" height="285" key="GridCell.Tab.1.right/0.23.1440.877@0.23.1440.877" timestamp="1590735920833" />
-    <state x="221" y="100" key="SettingsEditor" timestamp="1590633210158">
+    <state width="1398" height="285" key="GridCell.Tab.1.left/0.23.1440.877@0.23.1440.877" timestamp="1591229390936" />
+    <state width="1398" height="285" key="GridCell.Tab.1.right" timestamp="1591229390936">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="221" y="100" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1590633210158" />
-    <state x="301" y="186" width="837" height="550" key="find.popup" timestamp="1590364436118">
+    <state width="1398" height="285" key="GridCell.Tab.1.right/0.23.1440.877@0.23.1440.877" timestamp="1591229390936" />
+    <state x="221" y="100" key="SettingsEditor" timestamp="1591224680544">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="301" y="186" width="837" height="550" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1590364436118" />
+    <state x="221" y="100" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1591224680544" />
+    <state x="397" y="294" key="com.intellij.ide.util.TipDialog" timestamp="1591224468958">
+      <screen x="0" y="23" width="1440" height="877" />
+    </state>
+    <state x="397" y="294" key="com.intellij.ide.util.TipDialog/0.23.1440.877@0.23.1440.877" timestamp="1591224468958" />
+    <state x="442" y="253" width="837" height="550" key="find.popup" timestamp="1591170131809">
+      <screen x="0" y="23" width="1440" height="877" />
+    </state>
+    <state x="442" y="253" width="837" height="550" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1591170131809" />
     <state x="482" y="99" key="refactoring.ChangeSignatureDialog" timestamp="1590365649616">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="482" y="99" key="refactoring.ChangeSignatureDialog/0.23.1440.877@0.23.1440.877" timestamp="1590365649616" />
-    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup" timestamp="1590736872644">
+    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup" timestamp="1591167766061">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup/0.23.1440.877@0.23.1440.877" timestamp="1590736872644" />
+    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup/0.23.1440.877@0.23.1440.877" timestamp="1591167766061" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Event.py</url>
-          <line>139</line>
+          <line>188</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Event.py</url>
-          <line>22</line>
-          <option name="timeStamp" value="29" />
+          <line>125</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/test.py</url>
+          <line>83</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/WLAN_Simulation$GEL.coverage" NAME="GEL Coverage Results" MODIFIED="1590387703495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WLAN_Simulation$Event.coverage" NAME="Event Coverage Results" MODIFIED="1590632352654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WLAN_Simulation$Event.coverage" NAME="Event Coverage Results" MODIFIED="1591171020377" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WLAN_Simulation$dataframe.coverage" NAME="dataframe Coverage Results" MODIFIED="1590365089653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WLAN_Simulation$Distribution.coverage" NAME="Distribution Coverage Results" MODIFIED="1590365084319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WLAN_Simulation$main.coverage" NAME="main Coverage Results" MODIFIED="1590453538328" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WLAN_Simulation$test.coverage" NAME="test Coverage Results" MODIFIED="1590739155784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WLAN_Simulation$test.coverage" NAME="test Coverage Results" MODIFIED="1591230726031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

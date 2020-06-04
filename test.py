@@ -1,110 +1,94 @@
 import unittest
 from Host import Host
 from GEL import Global_Event_List
-from Event import ProcessDataFrameArrivalEvent, ScheduleDataFrameEvent
+from Event import ProcessDataFrameArrivalEvent, ScheduleDataFrameEvent, AckResultEvent
 class MyTestCase(unittest.TestCase):
-
-    def test_successful_transfer_cycle_without_RBA(self):
-        """
-        To test if an arrival dataframe event can take effect smoothly
-        :return:
-        """
-        gel = Global_Event_List()
-        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2], gel)
-        gel.addEvent(initialEvent)
-
-        # initialize the event
-        gel_event_1 = gel.getNextEvent()
-        gel_event_1.takeEffect(gel)
-        # self.assertEqual(gel_event_1.name, "internal DF")
-
-        gel_event_2 = gel.getNextEvent()
-        gel_event_2.takeEffect(gel)
-        # self.assertEqual(gel_event_2.name, "sense channel, df, stage 0")
-
-        gel_event_3 = gel.getNextEvent()
-        gel_event_3.takeEffect(gel)
-        # self.assertEqual(gel_event_3.name, "sense channel, df, stage 1")
-
-        gel_event_4 = gel.getNextEvent()
-        gel_event_4.takeEffect(gel)
-        # # self.assertEqual(gel_event_4.name, "push data to channel")
-        #
-        gel_event_5 = gel.getNextEvent()
-        gel_event_5.takeEffect(gel)
-        # # self.assertEqual(gel_event_5.name, "Departure Event, data")
-        #
-        # # Host 2 receive the packet from Host 1
-        gel_event_6 = gel.getNextEvent()
-        gel_event_6.takeEffect(gel)
-        # # self.assertEqual(gel_event_6.name, "external DF")
-        #
-        # # Host 2 sense if the channel is idle or not
-        gel_event_7 = gel.getNextEvent()
-        gel_event_7.takeEffect(gel)
-        # # self.assertEqual(gel_event_7.name, "sense channel, ack, stage 0")
-        #
-        gel_event_8 = gel.getNextEvent()
-        gel_event_8.takeEffect(gel)
-        # # self.assertEqual(gel_event_8.name, "sense channel, ack, stage 1")
-        #
-        gel_event_9 = gel.getNextEvent()
-        gel_event_9.takeEffect(gel)
-        # # self.assertEqual(gel_event_9.name, "push ack to channel")
-        #
-        gel_event_10 = gel.getNextEvent()
-        gel_event_10.takeEffect(gel)
-        # # self.assertEqual(gel_event_10.name, "Departure Event, ack")
-        #
-        gel_event_11 = gel.getNextEvent()
-        gel_event_11.takeEffect(gel)
-        # self.assertEqual(gel_event_11.name, "success transfer")
-        # gel.draw_event_timeline()
+    #
+    # def test_successful_transfer_cycle_without_RBA(self):
+    #     """
+    #     To test if an arrival dataframe event can take effect smoothly
+    #     :return:
+    #     """
+    #     gel = Global_Event_List()
+    #     for x in gel.host_array[0:2]:
+    #         initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, x, gel.getRandomHost(x), gel)
+    #         gel.addEvent(initialEvent)
+    #
+    #     # initialize the event
+    #     """
+    #     Timer 1 for 1 is created, and it will be ready at 1.2062966341753119
+    #     Timer 1 will ring at 1.2142218689806692
     #
     #
-
-    def test_successful_transfer_TOTAL_PACKET_for_One_HOST(self):
-        gel = Global_Event_List()
-        gel.TOTAL_PACKET = 5
-        initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, gel.host_array[0], gel.host_array[2], gel)
-        gel.addEvent(initialEvent)
-
-        while gel.packet_counter <= gel.TOTAL_PACKET:
-            # print(gel.packet_counter)
-            gel_event = gel.getNextEvent()
-            if gel_event == None:
-                break
-            else:
-                gel_event.takeEffect(gel)
-        # gel.draw_event_timeline()
+    #     """
+    #     event_run = 100
+    #     start_at =40
+    #     for x in range(event_run):
+    #         gel_event_11 = gel.getNextEvent()
+    #         gel_event_11.takeEffect(gel)
+    #         if x > start_at-2:
+    #             print(gel_event_11.description())
         # self.assertEqual(gel_event_11.name, "success transfer")
+
+    #
+
+    #
+    # #
+    # #
+    # def test_successful_transfer_TOTAL_PACKET_for_One_HOST(self):
+    #     gel = Global_Event_List()
+    #     for x in gel.host_array[0:1]:
+    #         initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, x, gel.getRandomHost(x), gel)
+    #         gel.addEvent(initialEvent)
+    #
+    #     while gel.packet_counter <= gel.TOTAL_PACKET:
+    #         # print(gel.packet_counter)
+    #         gel_event = gel.getNextEvent()
+    #
+    #         if gel_event == None:
+    #             break
+    #         else:
+    #             gel_event.takeEffect(gel)
+    #             print(gel_event.description())
+    #     gel.draw_event_timeline()
+    #     self.assertEqual(gel_event_11.name, "success transfer")
 
     def test_successful_transfer_TOTAL_PACKET_for_TWO_HOST(self):
         gel = Global_Event_List()
-        gel.TOTAL_PACKET = 20
+
         for x in gel.host_array:
             initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, x, gel.getRandomHost(x), gel)
             gel.addEvent(initialEvent)
         #
-        # num = 100
-        # for x in range(0, num):
-        #     gel_event = gel.getNextEvent()
-        #     gel_event.dataframe.globalID = gel.packet_counter
-        #     print(gel_event)
-        #     gel_event.takeEffect(gel)
-        #
-        # gel.draw_event_timeline()
-
         gel_event = True
-        try:
-            while gel_event:
-                gel_event = gel.getNextEvent()
-                gel_event.dataframe.globalID = gel.packet_counter
-                gel_event.takeEffect(gel)
 
-        except Exception as e:
-            gel.draw_event_timeline()
-            print(e)
+        for x in range(0, 100000):
+            gel_event = gel.getNextEvent()
+            gel_event.dataframe.globalID = gel.packet_counter
+            gel_event.takeEffect(gel)
+            print(gel_event.description())
+        #
+        # while gel_event:
+        #     gel_event = gel.getNextEvent()
+        #
+        #     if gel_event != None:
+        #
+        #         gel_event.dataframe.globalID = gel.packet_counter
+        #         gel_event.takeEffect(gel)
+        #
+        #         PRINT_ALL = True
+        #
+        #         # if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
+        #         #     print(gel_event.description())
+        #
+        #         print(gel_event.description())
+        # gel.draw_event_timeline_of_packets(3)
+        # gel.checkPacket(3)
+
+        # gel.draw_event_timeline()
+        # for host in gel.host_array:
+        #     print(host.buffer.array)
+
 
 
 

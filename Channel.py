@@ -28,9 +28,8 @@ class Channel(object):
             arrival_time = event_time
             :return:
             """
-            arrival_time = event_time
 
-            # def __init__(self, _type, event_time, sender, receiver, gel, origin=None, df=None):
+            arrival_time = event_time
             arrivalEvent = ScheduleDataFrameEvent(type, arrival_time, df.sender, df.receiver, self.GEL, df.origin, df)
             self.GEL.addEvent(arrivalEvent)
 
@@ -44,7 +43,7 @@ class Channel(object):
             pass
 
 
-        event_time = event_time + df.size / self.GEL.channel.rate
+
         departure = DepartureEvent(event_time, df, success, failure, df.origin)
         self.GEL.addEvent(departure)
 
