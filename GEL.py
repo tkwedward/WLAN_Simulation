@@ -4,7 +4,7 @@ from configuration_file import NUMBER_OF_HOST, ARRIVE_RATE, TOTAL_PACKET, CHANNE
 from Buffer import Buffer
 from Host import Host
 from Distribution import negative_exponential_distribution
-from Event import Event
+from Event import Event, SuccessTransferEvent, DepartureEvent, ProcessDataFrameArrivalEvent, ScheduleDataFrameEvent
 import random
 from collections import deque
 
@@ -170,10 +170,17 @@ class Global_Event_List(object):
 
 
     def calculate_throughput(self) -> float:
+        """
+        To find the throughput of the simulation
+        1. Find the total size of successful transferred dataframe
+        2. Find the total time of the simulation
+        3. throughput = total size / total time
+        :return:
+        """
         total_bytes_transferred = 0
         for event in self.timeLineEvent: # find total number of bytes transferred in simulation
-            if event.type == "success transfer":
-                total_bytes_transferred += event.df.size
+            if event.__class__ == SuccessTransferEvent:
+                total_bytes_transferred += event.dataframe.size
 
         total_simulation_time = self.timeLineEvent[-1].event_time
 
@@ -181,16 +188,27 @@ class Global_Event_List(object):
 
 
     def calculate_average_network_delay(self) -> float:
+        """
+        0. Find the total size of all dataframe
+        1. Find out the created time of the dataframe
+        2. Find out the time the dataframe is sent to the channel
+        3. total delay  = sum of (departure time - created time) of each dataframe
+        3. average delay = total delay / total size
+        :return:
+        """
         trans_and_queueing_delay = 0
         queued_events = {}
+
         for event in self.timeLineEvent:    # keep track of scheduled dataframe departures
-            if event.type == "internal DF":
-                queued_events[event.df] = event.event_time
+            if event.__class__ == ScheduleDataFrameEvent and event.type == "internal DF":
+                queued_events[event.dataframe.global_Id] = event.arrival_time
+
             elif isinstance(event, DepartureEvent): # measure time from scheduled departure to actual departure (queueing and transmission delay)
-                scheduled_time = queued_events[event.df]
+                scheduled_time = queued_events[event.dataframe.global_Id]
                 trans_and_queueing_delay += (event.event_time - scheduled_time)
 
-        throughput = calculate_throughput()
+
+        throughput = self.calculate_throughput()
 
         return trans_and_queueing_delay / throughput
 

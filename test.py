@@ -67,6 +67,7 @@ class MyTestCase(unittest.TestCase):
             gel_event.dataframe.globalID = gel.packet_counter
             gel_event.takeEffect(gel)
             print(gel_event.description())
+            print(gel.counter_array)
         #
         # while gel_event:
         #     gel_event = gel.getNextEvent()

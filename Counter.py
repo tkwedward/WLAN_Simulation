@@ -15,7 +15,7 @@ class Counter(object):
         gel.addEvent(timeout_event)
 
 
-    def freeze(self, current_time):
+    def freeze(self, current_time, remove_deactivate= True):
         """
         To calculate the remaining time so that when the channel's status
         :param current_time:
@@ -25,6 +25,12 @@ class Counter(object):
         self.event.status = "deactivate"
 
         freeze_text_result = f"Timer {self.global_Id} is freezed at {current_time}"
+
+        if remove_deactivate:
+            new_event_list =  list(filter(lambda e: e.__class__ != TimeoutEvent, self.origin.GEL.event_list))
+            self.origin.GEL.event_list = new_event_list
+
+
 
         return self.remaining_time, freeze_text_result
 

@@ -32,6 +32,9 @@ class Event(object):
         else:
             self.failure()
 
+    def output(self):
+        return {}
+
     def __str__(self):
         return "Event"
 
@@ -53,6 +56,7 @@ class ScheduleDataFrameEvent(Event):
             self.origin = origin
         self.GEL = gel
         self.dataframe = df
+        self.result_description = ""
 
         if self.type == "internal DF":
             """
@@ -71,16 +75,15 @@ class ScheduleDataFrameEvent(Event):
 
 
             def success():
-                if self.GEL.packet_counter < self.GEL.TOTAL_PACKET:
-                    new_arrival_event = ScheduleDataFrameEvent(_type, event_time, sender, receiver, self.GEL, sender)
-                    self.GEL.addEvent(new_arrival_event)
+                # if self.GEL.packet_counter < self.GEL.TOTAL_PACKET:
+                #     new_arrival_event = ScheduleDataFrameEvent(_type, event_time, sender, receiver, self.GEL, sender)
+                #     # self.GEL.addEvent(new_arrival_event)
 
                 self.sender.processArrivalDataFrame(arrival_time, self.receiver, "internal DF", df, df.origin)
 
 
             arrival_Event = ProcessDataFrameArrivalEvent(self.type, arrival_time, self.sender, self.receiver, df)
             arrival_Event.success = success
-
 
             self.GEL.addEvent(arrival_Event)
 
@@ -99,9 +102,13 @@ class ScheduleDataFrameEvent(Event):
 
         elif self.type == "ack":
             arrival_time = event_time
-
+            original_sender = self.sender
+            original_receiver = self.receiver
+            self.sender = original_receiver
+            self.receiver = original_sender
             self.arrival_time = arrival_time
             self.dataframe = df
+
 
             def success():
                 """
@@ -121,6 +128,22 @@ class ScheduleDataFrameEvent(Event):
 
     def description(self):
         return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), Schedule Dataframe {self.type} (at {self.arrival_time}, from {self.sender} to {self.receiver})s, {self.event_time} ms"
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "dataframe_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "arrival_time": self.arrival_time,
+                "sender": self.sender.name,
+                "receiver": self.receiver.name,
+                "result_description": self.result_description,
+                "channel_status": self.sender.GEL.channel.status
+        }
 
 
 class ProcessDataFrameArrivalEvent(Event):
@@ -143,7 +166,7 @@ class ProcessDataFrameArrivalEvent(Event):
                 new_arrival_event = ScheduleDataFrameEvent(self.type, self.event_time, self.sender, self.receiver, gel, self.sender)
                 gel.addEvent(new_arrival_event)
 
-        if sender.status == "idle":
+        if sender.status == "idle" or self.dataframe.type == "ack":
             self.success()
             self.result_description = f"{self.type} arrives and it is processed now"
         else:
@@ -153,6 +176,22 @@ class ProcessDataFrameArrivalEvent(Event):
 
     def description(self):
         return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), sender = {self.sender}, receiver = {self.receiver}, {self.result_description}, {self.event_time} ms"
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "dataframe_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.sender.name,
+                "receiver": self.receiver.name,
+                "result_description": self.result_description,
+                "channel_status": self.sender.GEL.channel.status
+        }
+
 
     def __str__(self):
         return f"{self.type}  {self.origin}, {self.sender}, {self.receiver}"
@@ -173,17 +212,37 @@ class SenseChannelEvent(Event):
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
         if gel.channel.status == "idle":
+            self.result = "success"
             self.success()
         else:
             create_counter_result = self.failure()
+            self.result = "failure"
             if create_counter_result:
                 counter = create_counter_result[0]
                 result_text = create_counter_result[1][1]
                 self.result_description.append(f"Timer {counter.global_Id} for {self.dataframe.global_Id} is created, and it will be ready at {counter.finish_time}")
                 self.result_description.append(result_text)
 
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "dataframe_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "result": self.result,
+                "result_description": self.result_description,
+                "channel_status": self.origin.GEL.channel.status
+        }
+
     def description(self):
-        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), sense channel ({self.origin.GEL.channel.status}), {self.type}, {self.event_time} ms"
+
+        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), sense channel ({self.origin.GEL.channel.status}, happen at {self.dataframe.sender}), {self.type}, {self.event_time} ms"
         # print("-----", self.result_description)
         return_text = self.combine_return_text(return_text, self.result_description)
         return return_text
@@ -227,9 +286,25 @@ class PushToChannelEvent(Event):
             self.failure()
 
     def description(self):
-        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), PushToChannelEvent, {self.result_description}, {self.event_time} ms"
+        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at {self.origin}), PushToChannelEvent, {self.result_description}, {self.event_time} ms"
         self.combine_return_text(return_text, self.result_description)
         return return_text
+
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "push_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "result_description": self.result_description,
+                "channel_status": self.origin.GEL.channel.status
+        }
 
 class DepartureEvent(Event):
     def __init__(self, event_time, df, success, failure, origin):
@@ -239,11 +314,11 @@ class DepartureEvent(Event):
         self.success = success
         self.failure = failure
         self.origin = origin
-        self.description_array = []
+        self.result_description = []
 
     def description(self):
-        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), Departure Event, {self.dataframe.type}, {self.event_time} ms"
-        return_text = self.combine_return_text(return_text, self.description_array)
+        return_text = f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at channel), Departure Event, {self.dataframe.type}, {self.event_time} ms"
+        return_text = self.combine_return_text(return_text, self.result_description)
         return return_text
 
     def takeEffect(self, gel):
@@ -256,13 +331,28 @@ class DepartureEvent(Event):
             for counter in gel.counter_array:
                 reschedule_result = counter.reschedule_finish_time(gel.current_time)
                 new_counter_timeout_event = reschedule_result[0]
-                self.description_array = reschedule_result[1]
+                self.result_description = reschedule_result[1]
                 gel.addEvent(new_counter_timeout_event)
 
             self.success()
         else:
             # pass to discard the item
             self.failure()
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "departure_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "channel_status": self.origin.GEL.channel.status,
+                "result_description": self.result_description
+        }
 
 
 class AckExpectedEvent(Event):
@@ -290,11 +380,26 @@ class AckExpectedEvent(Event):
         self.success()
 
     def description(self):
-        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), I am Expecting an Ack from the receiver at {self.expected_time}, {self.dataframe.type}, {self.event_time} ms "
+        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at {self.origin}), I am Expecting an Ack from the receiver at {self.expected_time}, {self.dataframe.type}, {self.event_time} ms "
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "expected_time": self.expected_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "departure_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "channel_status": self.origin.GEL.channel.status
+        }
 
 class SuccessTransferEvent(Event):
     def __init__(self, event_time, df, success, failure, origin):
-        super().__init__(event_time)
+        super().__init__(event_time+1e-11)
         self.type = "success transfer"
         self.dataframe = df
         self.success = success
@@ -307,10 +412,26 @@ class SuccessTransferEvent(Event):
     def takeEffect(self, gel):
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
+
+
         self.success()
 
     def description(self):
-        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), {self.type}, {self.dataframe.type}, {self.event_time} ms"
+        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at {self.origin}s), {self.type}, {self.dataframe.type}, {self.event_time} ms"
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "departure_type": self.type,
+                "origin": self.origin.name,
+                "type": self.type,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "channel_status": self.origin.GEL.channel.status
+        }
 
 class AckResultEvent(Event):
     def __init__(self, event_time, df, origin, ackExpectEvent, failure):
@@ -319,6 +440,7 @@ class AckResultEvent(Event):
         self.origin = origin
         self.ackExpectEvent = ackExpectEvent
         self.failure = failure
+        self.counter_duration = None
 
     def takeEffect(self, gel):
         self.event_id = len(gel.timeLineEvent)
@@ -326,6 +448,7 @@ class AckResultEvent(Event):
 
         target_event = self.origin.findExpectEvent(self.dataframe.global_Id)
         del target_event
+
 
         if self.ackExpectEvent.ACKed == True:
             self.result = "success"
@@ -347,7 +470,21 @@ class AckResultEvent(Event):
             description = "success to get back the ack packet"
         else:
             description = f"failure to get back the ack packet. Collision happened. I will do RBA and retransmit the dataframe again at {self.counter_duration}."
-        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), Expected ACK timeout. Result: {description}, {self.event_time} ms"
+        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at {self.origin}), Expected ACK timeout. Result: {description}, {self.event_time} ms"
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "origin": self.origin.name,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "result": self.result,
+                "counter_duration": self.counter_duration,
+                "channel_status": self.origin.GEL.channel.status
+        }
 
 
 class TimeoutEvent(Event):
@@ -370,11 +507,8 @@ class TimeoutEvent(Event):
             """
             When the counter reaches zero(note that this can only occur while the channel is sensed as being idle), the host transmits the entire frame and then waits for an acknowledgment."""
             self.origin.createPushToChannelEvent(self.event_time, self.dataframe, "external DF")
-            try:
-                counter = next(filter(lambda x: x.global_Id == self.global_Id, gel.counter_array))
-                gel.counter_array.remove(counter)
-            except StopIteration:
-                pass
+
+            gel.counter_array = list(filter(lambda x: x.global_Id != self.global_Id, gel.counter_array))
 
         else:
             """
@@ -387,4 +521,18 @@ class TimeoutEvent(Event):
             result = "Count down is finished. I am going to push the object to the channel again"
         else:
             result = "The TimeoutEvent is deactivated, I am not going to do anything. The counter will wait for the channel becomes idel again"
-        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), {result}, {self.event_time} ms"
+        return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}, happen at {self.origin}), {result}, {self.event_time} ms"
+
+    def output(self):
+        return {
+                "event": self.__class__.__name__,
+                "event_time": self.event_time,
+                "event_id": self.event_id,
+                "dataframe_id": self.dataframe.global_Id,
+                "origin": self.origin.name,
+                "sender": self.dataframe.sender.name,
+                "receiver": self.dataframe.receiver.name,
+                "status": self.status,
+                "channel_status": self.origin.GEL.channel.status
+        }
+

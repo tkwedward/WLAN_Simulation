@@ -24,9 +24,9 @@ class DataFrame(object):
             self.size = 64
         elif type == "data":
             # The data frame length(r)(identically distributed for all nodes) is a negativeexponentially distributed random variable in the range 0 < r ≤ 1544 bytes
-            # size = 10000
-            # while size > 1544 or size < 0:
-            #     size = negative_exponential_distribution(ARRIVE_RATE)
+            size = 10000
+            while size > 1544 or size < 0:
+                size = negative_exponential_distribution(ARRIVE_RATE)
             self.size = 1000
 
 

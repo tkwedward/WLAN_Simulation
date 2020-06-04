@@ -121,12 +121,16 @@ class Host(object):
                 self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 1", df.origin)
 
             def failure():
-                _countDownTime = self.rba(df.number_of_collision)
-                counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
-                self.GEL.counter_array.append(counter)
-                description_array = counter.freeze(sense_event_time)
+                self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 0", df.origin)
 
-                return counter, description_array
+            # def failure_1():
+            #     df.number_of_collision += 1
+            #     _countDownTime = self.rba(df.number_of_collision)
+            #     counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
+            #     self.GEL.counter_array.append(counter)
+            #     description_array = counter.freeze(sense_event_time)
+            #
+            #     return counter, description_array
 
         elif type == "df, stage 1":
             """
@@ -141,12 +145,17 @@ class Host(object):
                 self.createPushToChannelEvent(push_event_time, df)
 
             def failure():
-                _countDownTime = self.rba(df.number_of_collision)
-                counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
-                self.GEL.counter_array.append(counter)
-                description_array = counter.freeze(sense_event_time)
-
-                return counter, description_array
+                self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 0", df.origin)
+            #
+            # def failure_1():
+            #     df.number_of_collision += 1
+            #     _countDownTime = self.rba(df.number_of_collision)
+            #     counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
+            #     self.GEL.counter_array.append(counter)
+            #     description_array = counter.freeze(sense_event_time)
+            #
+            #
+            #     return counter, description_array
 
         elif type == "ack, stage 0":
             """
