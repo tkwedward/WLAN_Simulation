@@ -59,6 +59,11 @@ class Event(object):
 
         return buffer_dict
 
+    def get_blocking_information(self):
+        host_array = self.origin.GEL.host_array
+        host_blocking_status = {x.name: x.status for x in host_array}
+        return host_blocking_status
+
     def get_host_information(self):
         host_array = self.origin.GEL.host_array
         host_status = {x.name: x.status for x in host_array}
@@ -66,8 +71,12 @@ class Event(object):
 
     def get_processing_dataframe_information(self):
         host_array = self.origin.GEL.host_array
-        host_processing_dataframe = {x.name: x.processing_dataframe.global_Id for x in host_array}
-        return host_processing_dataframe
+        try:
+            host_processing_dataframe = {x.name: x.processing_dataframe.global_Id for x in host_array}
+            return host_processing_dataframe
+        except:
+            host_processing_dataframe = {x.name: "" for x in host_array}
+            return host_processing_dataframe
 
     def get_event_information(self):
         result = self.output()
@@ -75,6 +84,7 @@ class Event(object):
         result["host_status"] = self.get_host_information()
         result["buffer_status"] = self.get_buffer_information()
         result["counter_status"] = self.get_counter_information()
+        result["blocking_status"] = self.get_blocking_information()
         result["processing_dataframe"] = self.get_processing_dataframe_information()
         # print(result["buffer_status"], result["counter_status"])
 
@@ -134,11 +144,12 @@ class ScheduleDataFrameEvent(Event):
 
             arrival_Event = ProcessDataFrameArrivalEvent(self.type, arrival_time, self.sender, self.receiver, df)
             arrival_Event.success = success
+            self.arrival_time +=  0.00000001
 
             self.GEL.addEvent(arrival_Event)
 
         elif self.type == "external DF":
-            arrival_time = event_time
+            arrival_time = event_time + 0.00000001
             self.arrival_time = arrival_time
             self.dataframe = df
 
@@ -151,7 +162,7 @@ class ScheduleDataFrameEvent(Event):
             self.GEL.addEvent(arrival_Event)
 
         elif self.type == "ack":
-            arrival_time = event_time
+            arrival_time = event_time + 0.00000001
             original_sender = self.sender
             original_receiver = self.receiver
             self.sender = original_receiver
@@ -479,7 +490,7 @@ class SuccessTransferEvent(Event):
             print(f"=================sucess transfer {self.origin.processing_dataframe}, {self.dataframe}")
 
             next_packet = self.origin.buffer.pop_dataframe()
-            self.origin.processing_dataframe = next_packet.global_Id
+            self.origin.processing_dataframe = next_packet
             self.origin.createSenseChannelEvent(self.origin.GEL.current_time, next_packet, "df, stage 0", self)
             # print(self.origin.GEL.show_event_list())
         self.success()

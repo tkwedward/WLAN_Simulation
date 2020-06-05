@@ -13,11 +13,17 @@ for x in gel.host_array:
         #
     gel_event = True
 
-limited = False
+limited = True
 # lower_bound = 17000
 # upper_bound = lower_bound + 500
-lower_bound = 4000
-upper_bound = lower_bound + 1000
+
+# lower_bound = 112500
+# 612 packet problem start
+
+# 10653
+lower_bound = 10600
+
+upper_bound = lower_bound + 500
 if limited:
     objects= {
         "host": [],
