@@ -14,8 +14,10 @@ for x in gel.host_array:
     gel_event = True
 
 limited = False
-lower_bound = 19
-upper_bound = 1000
+# lower_bound = 17000
+# upper_bound = lower_bound + 500
+lower_bound = 4000
+upper_bound = lower_bound + 1000
 if limited:
     objects= {
         "host": [],
@@ -33,15 +35,22 @@ if limited:
                 PRINT_ALL = True
 
                 if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
-                    _o = gel_event.output()
-                    if _o:
-                        objects["data"].append(_o)
+
                     if x > lower_bound:
-                        print(gel_event.description())
+                        _o = gel_event.get_event_information()
+                        if _o:
+                            objects["data"].append(_o)
+                        # print(gel_event.description())
                         pass
             else:
                 break
+        for p in gel.packet_array:
+            if p.fate == "failure":
+                print(f"df {p.global_Id}, {p.fate}")
+
         json.dump(objects, f)
+
+
 
         average_throughput = gel.calculate_throughput()
         average_delay = gel.calculate_average_network_delay()
@@ -50,6 +59,7 @@ if limited:
     # prin  t(objects)
 else:
     count = 0
+    PRINT_ALL = False
     while gel_event:
 
         gel_event = gel.getNextEvent()
@@ -58,14 +68,16 @@ else:
             gel_event.dataframe.globalID = gel.packet_counter
             gel_event.takeEffect(gel)
 
-            PRINT_ALL = True
-
-            if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
-
+            if count % 1 == 0:
                 print(gel_event.description())
-                # print(gel.counter_array)
-                # print(f"==========={count}===========")
-                count+=1
+            count += 1
+            # if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
+            # if count % 100 == 0:
+
+
+            # # print(gel.counter_array)
+            # # print(f"==========={count}===========")
+            #
 
     average_throughput = gel.calculate_throughput()
     average_delay = gel.calculate_average_network_delay()

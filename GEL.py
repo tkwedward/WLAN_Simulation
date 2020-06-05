@@ -22,6 +22,7 @@ class Global_Event_List(object):
         # variables and counters
         self.timeLineEvent = []
         self.counter_array = []
+        self.packet_array = []
         self.event_list = deque()
         self.busy_time = 0
         self.current_time = 0
@@ -105,6 +106,7 @@ class Global_Event_List(object):
         :return:
         """
         self.event_list.append(event)
+        self.sort_event_list()
 
     def getRandomHost(self, initializer):
         result_list = list(filter(lambda x: x!= initializer, self.host_array))
@@ -134,6 +136,11 @@ class Global_Event_List(object):
     #     total_area = sum(total_number_array)
     #     return total_area/self.current_time
     #
+    def show_event_list(self):
+        event_list = [_e.tell_me_event_name() for _e in self.event_list]
+
+        return event_list
+
     def draw_event_timeline_of_packets(self, packet_number=None):
         packets = {}
         for x in range(0, self.packet_counter):
@@ -165,7 +172,7 @@ class Global_Event_List(object):
     def checkPacket(self, df_number):
         event = next(filter(lambda event: event.dataframe.global_Id == df_number, self.timeLineEvent))
         df = event.dataframe
-        print(f"{df.type}, {df.global_Id}, {df.size}")
+        # print(f"{df.type}, {df.global_Id}, {df.size}")
 
 
 
@@ -211,35 +218,3 @@ class Global_Event_List(object):
         throughput = self.calculate_throughput()
 
         return trans_and_queueing_delay / throughput
-
-    #
-    #
-    # def statistic(self)-> None:
-    #     """
-    #     To get the statistics
-    #     Not finished
-    #     :return:
-    #     """
-    #
-    #     print("Event Timeline")
-    #     self.draw_event_timeline()
-    #     print("======"*10)
-    #     print("dropped number")
-    #     print(f"The number of dropped packet is {self.buffer.get_dropped_packet_number()}")
-    #     print("======" * 10)
-    #     print("Utilization time data")
-    #     total_time = self.get_total_time()
-    #     busy_time = self.link_processor.get_busy_time()
-    #     print(f"The total time is {total_time}, the busy time is {busy_time}")
-    #     print(f"The percentage of busy time is {round(busy_time / total_time * 100, 2)}%")
-    #     print("======" * 10)
-    #     print(f"The mean number of packet in the system is {self.mean_number_in_system()}")
-    #     # print(f"The number of mean queue length is {self.buffer.mean_queue_length()}")
-    #     print("======" * 10)
-    #     rho = self.ARRIVE_RATE / self.SERVICE_RATE
-    #     print(f"The value of rho is {rho}")
-    #     print(f"The theoretical value of number in the system is {rho/(1-rho)}")
-    #
-    #
-    #
-

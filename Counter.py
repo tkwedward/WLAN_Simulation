@@ -3,6 +3,7 @@ from Event import TimeoutEvent
 
 class Counter(object):
     def __init__(self, created_time, duration, df, origin, gel):
+        self.name = f"Timer {df.global_Id}"
         self.created_time = created_time
         self.finish_time = created_time + duration
         self.dataframe = df

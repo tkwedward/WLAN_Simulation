@@ -19,6 +19,8 @@ class Host(object):
         self.SIFS = 0.05                 # 0.05 ms
         self.notACKedArray = []
         self.ackId = 0
+        self.blocking = False
+        self.processing_dataframe = ""
 
     def rba(self, collision_value):
         if collision_value == 0:
@@ -30,7 +32,7 @@ class Host(object):
         return retval
 
     def addToBuffer(self, df: DataFrame):
-        self.buffer.append(df)
+        self.buffer.array.append(df)
 
     def processArrivalDataFrame(self, event_time: float, receiver: "Host", _type: str, df = None, origin = None):
         """
@@ -60,9 +62,14 @@ class Host(object):
             To create a sense channel event, or put it into the buffer
             """
 
-            if self.status == "idle":
+            # print(self.status)
+
+            if self.status == "idle" and len(self.buffer.array)==0 and self.blocking==False:
                 self.status = "busy"
                 self.createSenseChannelEvent(event_time, df, "df, stage 0", df.origin)
+            else:
+                self.addToBuffer(df)
+
 
 
 
@@ -77,17 +84,26 @@ class Host(object):
 
             self.createSenseChannelEvent(event_time, ack, "ack, stage 0", df.origin)
 
+
+        # if received is ack
         elif _type == "ack":
             success_time = event_time
 
             def success():
                 "to get the unacked event from the notAckedDict and then acknowledge the packet. If the buffer still contains dataframe, go to sense channel step again for the next dataframe in the buffer"
 
-                if len(self.buffer.array) != 0:
-                    next_df = self.buffer.array.popleft()
-                    self.createSenseChannelEvent(event_time, next_df, "df, stage 0", df.origin)
+                pass
+                # if len(self.buffer.array) > 0:
+                #     pass
+                #     print(f"=================sucess transfer {self.processing_dataframe}")
+                #     next_packet = self.buffer.pop_dataframe()
+                #     self.processing_dataframe = next_packet.global_Id
+                #     self.createSenseChannelEvent(self.GEL.current_time, next_packet, "df, stage 0", self)
+                #     print(self.GEL.show_event_list())
+
 
             success_event = SuccessTransferEvent(success_time, df, success, failure, df.origin)
+
             self.GEL.addEvent(success_event)
 
     def createSenseChannelEvent(self, event_time: float, df: DataFrame, type: str, origin, counter: float = None):
@@ -116,6 +132,7 @@ class Host(object):
                 success => If the channel is idle, wait for 1 DIFS (0.1 ms)
                 failure => If the channel is busy, create a countdown and then create another sense event to reduce the timer to 0.
             """
+            self.processing_dataframe = df
 
             def success():
                 self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 1", df.origin)
@@ -155,6 +172,7 @@ class Host(object):
             #     description_array = counter.freeze(sense_event_time)
             #
             #
+# (Event 4035) AckResultEvent: success transfer (dataframe 238)
             #     return counter, description_array
 
         elif type == "ack, stage 0":
@@ -258,7 +276,9 @@ class Host(object):
             counter_duration = self.rba(df.number_of_collision)
 
             counter = Counter(expected_event_time, counter_duration, df, self, self.GEL)
+            self.blocking = True
             self.GEL.counter_array.append(counter)
+
             return expected_event_time + counter_duration
 
         ackResultEvent = AckResultEvent(expected_event_time, df, df.origin, ackExpectEvent, failure)
@@ -267,6 +287,8 @@ class Host(object):
         self.GEL.addEvent(ackResultEvent)
 
     def findExpectEvent(self, global_Id):
+        # to find the expected event in the
+        # print(self.notACKedArray)
         return next(filter(lambda x: x.dataframe.global_Id == global_Id, self.notACKedArray ))
 
     def __str__(self):

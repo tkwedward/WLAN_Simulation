@@ -19,5 +19,5 @@ class Buffer(object):
         To get the packet at the front of the buffer
         :return:
         """
-        dataframe =  self.array.pop()
+        dataframe =  self.array.popleft()
         return dataframe

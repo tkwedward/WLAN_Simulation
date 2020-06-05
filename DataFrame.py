@@ -18,6 +18,8 @@ class DataFrame(object):
         self.number_of_collision = 0
         self.id = id
         self.origin = origin
+        self.fate = "failure"
+        self.fate_time = 0
 
         if type == "ACK":
             # acknowledgement frame is constant in size (64 bytes).
@@ -38,3 +40,5 @@ class DataFrame(object):
         return (-1/rate) * math.log(1 - random.random())
 
 
+    def __repr__(self):
+        return str(self.global_Id)
