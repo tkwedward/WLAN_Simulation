@@ -54,7 +54,7 @@ limited = True
 lower_bound = 0
 
 
-upper_bound = lower_bound + 100000
+upper_bound = lower_bound + 27560
 if limited:
     objects= {
         "host": [],
@@ -62,7 +62,7 @@ if limited:
     }
     objects["host"] = [ h.name for h in gel.host_array ]
     try:
-        with open("output.json", "w") as f:
+        with open("log.txt", "w+") as f:
             for x in range(upper_bound):
                 if gel_event != None:
                     gel_event = gel.getNextEvent()
@@ -77,7 +77,9 @@ if limited:
                             _o = gel_event.get_event_information()
                             if _o:
                                 objects["data"].append(_o)
+                            f.write(gel_event.description()+"\n\n")
                             print(gel_event.description())
+
                             pass
                 else:
                     break
@@ -86,7 +88,18 @@ if limited:
                     print(f"df {p.global_Id}, {p.fate}")
 
             json.dump(objects, f)
-    except AttributeError:
+
+            average_throughput = gel.calculate_throughput()
+            average_delay = gel.calculate_average_network_delay()
+
+
+
+            print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")
+
+
+            print(NUMBER_OF_HOST)
+
+    except:
         average_throughput = gel.calculate_throughput()
         average_delay = gel.calculate_average_network_delay()
         print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")

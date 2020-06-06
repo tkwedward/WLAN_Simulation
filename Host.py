@@ -1,11 +1,9 @@
 from Buffer import Buffer
 from DataFrame import DataFrame
-from Distribution import negative_exponential_distribution
-from Event import ProcessDataFrameArrivalEvent, SenseChannelEvent, PushToChannelEvent, AckExpectedEvent, SuccessTransferEvent, ScheduleDataFrameEvent, AckResultEvent
+from Event import SenseChannelEvent, PushToChannelEvent, AckExpectedEvent, SuccessTransferEvent, AckResultEvent
 import random
 import configparser
 from Counter import Counter
-random.seed(10)
 
 class Host(object):
     def __init__(self, number: int, gel: "Global Event List"):
@@ -32,7 +30,7 @@ class Host(object):
         if collision_value > 10:
             n = 10
         LOWER_BOUND = 1
-        t = random.randint(LOWER_BOUND, 100)
+        t = random.randint(LOWER_BOUND, 1000)
         retval = random.randint(LOWER_BOUND, (pow(2, collision_value) - 1))
         return t*retval
 
@@ -66,11 +64,7 @@ class Host(object):
             Schedule next event
             To create a sense channel event, or put it into the buffer
             """
-
-            # print(self.status)
-
             if self.status == "idle" and len(self.buffer.array)==0 and self.blocking==False:
-                # self.status = "busy"/
                 self.createSenseChannelEvent(event_time, df, "df, stage 0", df.origin)
             else:
                 self.addToBuffer(df)
