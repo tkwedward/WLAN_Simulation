@@ -13,7 +13,8 @@ for x in gel.host_array:
         #
     gel_event = True
 
-limited = False
+limited = True
+# limited = False
 # lower_bound = 17000
 # upper_bound = lower_bound + 500
 
