@@ -1,6 +1,6 @@
 import random
 from Distribution import negative_exponential_distribution
-from configuration_file import ARRIVE_RATE
+import configparser
 
 
 class DataFrame(object):
@@ -20,6 +20,10 @@ class DataFrame(object):
         self.origin = origin
         self.fate = "failure"
         self.fate_time = 0
+
+        config = configparser.ConfigParser()
+        config.read("configuration_file.ini")
+        ARRIVE_RATE = float(config["DEFAULT"]["ARRIVE_RATE"])
 
         if type == "ACK":
             # acknowledgement frame is constant in size (64 bytes).

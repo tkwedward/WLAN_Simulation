@@ -1,23 +1,25 @@
 from DataFrame import DataFrame
 from Channel import Channel
-from configuration_file import NUMBER_OF_HOST, ARRIVE_RATE, TOTAL_PACKET, CHANNEL_RATE
 from Buffer import Buffer
 from Host import Host
 from Distribution import negative_exponential_distribution
 from Event import Event, SuccessTransferEvent, DepartureEvent, ProcessDataFrameArrivalEvent, ScheduleDataFrameEvent
 import random
+import configparser
 from collections import deque
 
 class Global_Event_List(object):
-    def __init__(self, ARRIVE_RATE = ARRIVE_RATE, CHANNEL_RATE = CHANNEL_RATE, TOTAL_PACKET=TOTAL_PACKET, NUMBER_OF_HOST = NUMBER_OF_HOST):
-        self.channel = Channel(CHANNEL_RATE, self)
-        self.host_array = [ Host(n, self) for n in range(NUMBER_OF_HOST) ]
-        self._previousEvent = None
+    def __init__(self, ARRIVE_RATE = None, CHANNEL_RATE = None, TOTAL_PACKET=None, NUMBER_OF_HOST = None):
+        config = configparser.ConfigParser()
+        config.read("configuration_file.ini")
+        self.ARRIVE_RATE = float(config["DEFAULT"]["ARRIVE_RATE"])
+        self.NUMBER_OF_HOST = int(config["DEFAULT"]["NUMBER_OF_HOST"])
+        self.TOTAL_PACKET = int(config["DEFAULT"]["TOTAL_PACKET"])
+        self.CHANNEL_RATE = int(config["DEFAULT"]["CHANNEL_RATE"])
 
-        # constants
-        self.ARRIVE_RATE = ARRIVE_RATE
-        self.CHANNEL_RATE = CHANNEL_RATE
-        self.TOTAL_PACKET = TOTAL_PACKET
+        self.channel = Channel(self.CHANNEL_RATE, self)
+        self.host_array = [ Host(n, self) for n in range(self.NUMBER_OF_HOST) ]
+        self._previousEvent = None
 
         # variables and counters
         self.timeLineEvent = []

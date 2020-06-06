@@ -1,9 +1,38 @@
-from configuration_file import NUMBER_OF_HOST
+#from configuration_file import NUMBER_OF_HOST
 from Host import Host
 from Channel import Channel
 from Event import ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent
 from GEL import Global_Event_List
 import json
+import configparser
+
+while True:
+    try:
+        NUMBER_OF_HOST = int(input("Enter number of hosts: "))
+        if NUMBER_OF_HOST <= 0:
+            print("Error: must be a positive integer")
+        else:
+            break
+    except:
+        print("Error: must be a positive integer")
+
+while True:
+    try:
+        ARRIVE_RATE = float(input("Enter arrival rate: "))
+        if ARRIVE_RATE >= 1 or ARRIVE_RATE <= 0:
+            print("Error: must be a number between 0 and 1")
+        else:
+            break
+    except:
+        print("Error: must be a number between 0 and 1")
+
+config = configparser.ConfigParser()
+config.read("configuration_file.ini")
+config.set("DEFAULT", "NUMBER_OF_HOST", str(NUMBER_OF_HOST))
+config.set("DEFAULT", "ARRIVE_RATE", str(ARRIVE_RATE))
+
+with open('configuration_file.ini', 'w') as configfile:
+    config.write(configfile)
 
 gel = Global_Event_List()
 

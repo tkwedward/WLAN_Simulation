@@ -1,6 +1,6 @@
 from DataFrame import DataFrame
 from Distribution import negative_exponential_distribution
-from configuration_file import ARRIVE_RATE, CHANNEL_RATE
+import configparser
 
 DIFS = 0.1
 SIFS = 0.05
@@ -122,6 +122,10 @@ class ScheduleDataFrameEvent(Event):
             The origin of an external DF is the origin of the df
             The origin of an ack is the origin of the df
             """
+
+            config = configparser.ConfigParser()
+            config.read("configuration_file.ini")
+            ARRIVE_RATE = float(config["DEFAULT"]["ARRIVE_RATE"])
 
             arrival_time = event_time + negative_exponential_distribution(ARRIVE_RATE)
             df = DataFrame("data", arrival_time, self.sender, self.receiver, self.sender.ackId, origin=self.origin)
