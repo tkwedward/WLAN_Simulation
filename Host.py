@@ -65,7 +65,7 @@ class Host(object):
             # print(self.status)
 
             if self.status == "idle" and len(self.buffer.array)==0 and self.blocking==False:
-                self.status = "busy"
+                # self.status = "busy"/
                 self.createSenseChannelEvent(event_time, df, "df, stage 0", df.origin)
             else:
                 self.addToBuffer(df)

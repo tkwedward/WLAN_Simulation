@@ -188,7 +188,7 @@ class ScheduleDataFrameEvent(Event):
     def takeEffect(self, gel):
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
-        self.success()
+        # self.success()
 
 
     def description(self):
