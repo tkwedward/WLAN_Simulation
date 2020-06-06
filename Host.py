@@ -32,8 +32,9 @@ class Host(object):
         if collision_value > 10:
             n = 10
         LOWER_BOUND = 1
+        t = random.randint(LOWER_BOUND, 100)
         retval = random.randint(LOWER_BOUND, (pow(2, collision_value) - 1))
-        return retval
+        return t*retval
 
     def addToBuffer(self, df: DataFrame):
         self.buffer.array.append(df)
