@@ -139,10 +139,6 @@ class ScheduleDataFrameEvent(Event):
 
 
             def success():
-                # if self.GEL.packet_counter < self.GEL.TOTAL_PACKET:
-                #     new_arrival_event = ScheduleDataFrameEvent(_type, event_time, sender, receiver, self.GEL, sender)
-                #     # self.GEL.addEvent(new_arrival_event)
-
                 self.sender.processArrivalDataFrame(arrival_time, self.receiver, "internal DF", df, df.origin)
 
 
@@ -188,8 +184,6 @@ class ScheduleDataFrameEvent(Event):
     def takeEffect(self, gel):
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
-        # self.success()
-
 
     def description(self):
         return f"{self.event_id}, ({self.origin}, global packet Id = {self.dataframe.global_Id}), Schedule Dataframe {self.type} (at {self.arrival_time}, from {self.sender} to {self.receiver})s, {self.event_time} ms"
@@ -212,8 +206,6 @@ class ScheduleDataFrameEvent(Event):
 
     def __repr__(self):
         return f"{self.__class__.__name__} ({self.origin.name})"
-
-
 
 class ProcessDataFrameArrivalEvent(Event):
     def __init__(self, _type, event_time, sender, receiver, df):
@@ -267,8 +259,6 @@ class ProcessDataFrameArrivalEvent(Event):
     def __repr__(self):
         return f"{self.__class__.__name__} ({self.type}  {self.origin}, {self.sender}, {self.receiver})"
 
-
-
 class SenseChannelEvent(Event):
     def __init__(self, event_time, _type, df, success, failure, origin):
         super().__init__(event_time)
@@ -294,7 +284,6 @@ class SenseChannelEvent(Event):
                 result_text = create_counter_result[1][1]
                 self.result_description.append(f"Timer {counter.global_Id} for {self.dataframe.global_Id} is created, and it will be ready at {counter.finish_time}")
                 self.result_description.append(result_text)
-
 
     def output(self):
         return {
@@ -333,8 +322,6 @@ class PushToChannelEvent(Event):
     If busy, then discard the event
     """
     def __init__(self, event_time, _type, df, success, failure, origin):
-        import inspect
-
         super().__init__(event_time)
         self.type = _type
         self.dataframe = df
@@ -386,12 +373,11 @@ class PushToChannelEvent(Event):
         }
 
 class DepartureEvent(Event):
-    def __init__(self, event_time, df, success, failure, origin):
+    def __init__(self, event_time, df, success, origin):
         super().__init__(event_time)
         self.type = df.type
         self.dataframe = df
         self.success = success
-        self.failure = failure
         self.origin = origin
         self.result_description = []
 
@@ -474,11 +460,10 @@ class AckExpectedEvent(Event):
         }
 
 class SuccessTransferEvent(Event):
-    def __init__(self, event_time, df, success, failure, origin):
+    def __init__(self, event_time, df, failure, origin):
         super().__init__(event_time+1e-11)
         self.type = "success transfer"
         self.dataframe = df
-        self.success = success
         self.failure = failure
         self.origin = origin
         target_event = df.sender.findExpectEvent(df.global_Id)
@@ -497,7 +482,6 @@ class SuccessTransferEvent(Event):
             next_packet = self.origin.buffer.pop_dataframe()
             self.origin.processing_dataframe = next_packet
             self.origin.createSenseChannelEvent(self.origin.GEL.current_time, next_packet, "df, stage 0", self)
-            # print(self.origin.GEL.show_event_list())
         self.success()
 
 
@@ -531,10 +515,6 @@ class AckResultEvent(Event):
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
 
-        # target_event = self.origin.findExpectEvent(self.dataframe.global_Id)
-        # del target_event
-
-
         if self.ackExpectEvent.ACKed == True or self.dataframe.ACKed == True:
         # if self.ackExpectEvent.ACKed == True:
             self.dataframe.fate = "success"
@@ -542,20 +522,11 @@ class AckResultEvent(Event):
             self.dataframe.fate_time = self.event_time
             self.result = "success"
             self.status = "idle"
-
-
-            # if len(self.origin.buffer.array)!=0:
-            #     next_packet = self.origin.buffer.pop_dataframe()
-            #     self.origin.processing_dataframe = next_packet.name
-            #     self.origin.createSenseChannelEvent(gel.current_time, next_packet, "df, stage 0", self.origin)
-
         else:
             print("========", self.dataframe)
             self.dataframe.fate = "failure"
             self.result = "failure"
             self.counter_duration = self.failure()
-
-            # self.origin.createSenseChannelEvent(self.event_time, self.dataframe, "df, stage 0", self.dataframe.origin)
 
     def description(self):
         if self.result == "success":

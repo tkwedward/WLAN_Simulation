@@ -30,9 +30,6 @@ class Counter(object):
         if remove_deactivate:
             new_event_list =  list(filter(lambda e: e.__class__ != TimeoutEvent, self.origin.GEL.event_list))
             self.origin.GEL.event_list = new_event_list
-
-
-
         return self.remaining_time, freeze_text_result
 
     def reschedule_finish_time(self, current_time):

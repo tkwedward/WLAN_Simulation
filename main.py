@@ -1,9 +1,6 @@
 #from configuration_file import NUMBER_OF_HOST
-from Host import Host
-from Channel import Channel
-from Event import ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent
+from Event import ScheduleDataFrameEvent
 from GEL import Global_Event_List
-import json
 import configparser
 
 while True:
@@ -39,98 +36,15 @@ gel = Global_Event_List()
 for x in gel.host_array:
     initialEvent = ScheduleDataFrameEvent("internal DF", gel.current_time, x, gel.getRandomHost(x), gel)
     gel.addEvent(initialEvent)
-        #
     gel_event = True
 
-limited = True
-# limited = False
-# lower_bound = 17000
-# upper_bound = lower_bound + 500
+while gel_event:
+    gel_event = gel.getNextEvent()
+    if gel_event != None:
+        gel_event.dataframe.globalID = gel.packet_counter
+        gel_event.takeEffect(gel)
+        print(gel_event.description())
 
-# lower_bound = 112500
-# 612 packet problem start
-
-# 10653
-lower_bound = 0
-
-
-upper_bound = lower_bound + 27560
-if limited:
-    objects= {
-        "host": [],
-        "data": []
-    }
-    objects["host"] = [ h.name for h in gel.host_array ]
-    try:
-        with open("log.txt", "w+") as f:
-            for x in range(upper_bound):
-                if gel_event != None:
-                    gel_event = gel.getNextEvent()
-                    gel_event.dataframe.globalID = gel.packet_counter
-                    gel_event.takeEffect(gel)
-
-                    PRINT_ALL = True
-
-                    if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
-
-                        if x > lower_bound:
-                            _o = gel_event.get_event_information()
-                            if _o:
-                                objects["data"].append(_o)
-                            f.write(gel_event.description()+"\n\n")
-                            print(gel_event.description())
-
-                            pass
-                else:
-                    break
-            for p in gel.packet_array:
-                if p.fate == "failure":
-                    print(f"df {p.global_Id}, {p.fate}")
-
-            json.dump(objects, f)
-
-            average_throughput = gel.calculate_throughput()
-            average_delay = gel.calculate_average_network_delay()
-
-
-
-            print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")
-
-
-            print(NUMBER_OF_HOST)
-
-    except:
-        average_throughput = gel.calculate_throughput()
-        average_delay = gel.calculate_average_network_delay()
-        print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")
-        print(NUMBER_OF_HOST)
-
-
-
-
-
-else:
-    count = 0
-    PRINT_ALL = False
-    while gel_event:
-
-        gel_event = gel.getNextEvent()
-
-        if gel_event != None:
-            gel_event.dataframe.globalID = gel.packet_counter
-            gel_event.takeEffect(gel)
-
-            if count % 1 == 0:
-                print(gel_event.description())
-            count += 1
-            # if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
-            # if count % 100 == 0:
-
-
-            # # print(gel.counter_array)
-            # # print(f"==========={count}===========")
-            #
-
-    average_throughput = gel.calculate_throughput()
-    average_delay = gel.calculate_average_network_delay()
-    print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")
+average_throughput = gel.calculate_throughput()
+average_delay = gel.calculate_average_network_delay()
+print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")

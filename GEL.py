@@ -54,32 +54,6 @@ class Global_Event_List(object):
 
             self.eventTakeAction(next_event)
 
-    #
-    # def arrival_time(self)->float:
-    #     """
-    #     To calculate the arrival time of the next arrival packet
-    #     """
-    #     return self.current_time + negative_exponential_distribution(self.ARRIVE_RATE)
-    #
-    # def transmit_time(self)->float:
-    #     """
-    #     To calculate the transfer time of a packet in the link processor
-    #     """
-    #     return self.current_time + negative_exponential_distribution(self.SERVICE_RATE)
-    #
-
-    #
-    # def initialFirstEvent(self) -> None:
-    #     """
-    #     Initialize the simulation by creating an initial arrival event and packet
-    #     :return:
-    #     """
-    #     _event_time = self.arrival_time()
-    #     _event = Event("Arrival", _event_time)
-    #     _packet = self.create_packet()
-    #     _event.packet = _packet
-    #     self.addEvent(_event)
-    #
     def getNextEvent(self) -> Event:
         """
         To get the next event from the event list"""
@@ -119,25 +93,7 @@ class Global_Event_List(object):
     def __repr__(self):
         _event_list = [f"{event}, {event.event_time}" for event in self.event_list]
         return ", ".join(_event_list)
-    #
-    # def get_total_time(self) -> float:
-    #     return self.timeLineEvent[-1].event_time
-    #
-    #
-    # def getNumberInSystem(self)-> int:
-    #     # to get the number of packets in the system at that moment
-    #     return self.buffer.number_in_link_processor + len(self.buffer.array)
-    #
-    # def mean_number_in_system(self)-> float:
-    #     """
-    #     in self.number_in_system, it contains the number of packets in the system when the event is about to happen.
-    #     This function calculate the area in each time interval, and then add them together.
-    #     :return: the mean number in the system
-    #     """
-    #     total_number_array = [x["number_in_system"] * x["time_duration"] for x in self.number_in_system]
-    #     total_area = sum(total_number_array)
-    #     return total_area/self.current_time
-    #
+
     def show_event_list(self):
         event_list = [_e.tell_me_event_name() for _e in self.event_list]
 

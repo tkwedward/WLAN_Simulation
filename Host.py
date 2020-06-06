@@ -69,9 +69,6 @@ class Host(object):
             else:
                 self.addToBuffer(df)
 
-
-
-
         elif _type == "external DF":
             """
             create an ack packet, and then create a SenseChannel Event for this ack packet 
@@ -83,25 +80,9 @@ class Host(object):
 
             self.createSenseChannelEvent(event_time, ack, "ack, stage 0", df.origin)
 
-
-        # if received is ack
-        elif _type == "ack":
+        elif _type == "ack":    # if received is ack
             success_time = event_time
-
-            def success():
-                "to get the unacked event from the notAckedDict and then acknowledge the packet. If the buffer still contains dataframe, go to sense channel step again for the next dataframe in the buffer"
-
-                pass
-                # if len(self.buffer.array) > 0:
-                #     pass
-                #     print(f"=================sucess transfer {self.processing_dataframe}")
-                #     next_packet = self.buffer.pop_dataframe()
-                #     self.processing_dataframe = next_packet.global_Id
-                #     self.createSenseChannelEvent(self.GEL.current_time, next_packet, "df, stage 0", self)
-                #     print(self.GEL.show_event_list())
-
-
-            success_event = SuccessTransferEvent(success_time, df, success, failure, df.origin)
+            success_event = SuccessTransferEvent(success_time, df, failure, df.origin)
 
             self.GEL.addEvent(success_event)
 
@@ -131,8 +112,6 @@ class Host(object):
                 success => If the channel is idle, wait for 1 DIFS (0.1 ms)
                 failure => If the channel is busy, create a countdown and then create another sense event to reduce the timer to 0.
             """
-            # print("00000000000000", df)
-            # print(self.blocking)
             self.processing_dataframe = df
             self.status = "busy"
 
@@ -141,15 +120,6 @@ class Host(object):
 
             def failure():
                 self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 0", df.origin)
-
-            # def failure_1():
-            #     df.number_of_collision += 1
-            #     _countDownTime = self.rba(df.number_of_collision)
-            #     counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
-            #     self.GEL.counter_array.append(counter)
-            #     description_array = counter.freeze(sense_event_time)
-            #
-            #     return counter, description_array
 
         elif type == "df, stage 1":
             """
@@ -165,17 +135,6 @@ class Host(object):
 
             def failure():
                 self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 0", df.origin)
-            #
-            # def failure_1():
-            #     df.number_of_collision += 1
-            #     _countDownTime = self.rba(df.number_of_collision)
-            #     counter = Counter(sense_event_time, _countDownTime, df, df.origin, self.GEL)
-            #     self.GEL.counter_array.append(counter)
-            #     description_array = counter.freeze(sense_event_time)
-            #
-            #
-# (Event 4035) AckResultEvent: success transfer (dataframe 238)
-            #     return counter, description_array
 
         elif type == "ack, stage 0":
             """
@@ -236,14 +195,8 @@ class Host(object):
             """
             departure_event_time = event_time + df.size / self.channel.rate * 1000
             self.channel.createDepartureEvent(departure_event_time, df, type)
-
-
             if type == "external DF":
                 self.createExpectAckEvent(event_time, df)
-
-            elif type == "ack":
-                """do not need to pass back ack if the packet is an ack"""
-                pass
 
         def failure():
             self.createExpectAckEvent(event_time, df)
@@ -251,9 +204,6 @@ class Host(object):
         push_event_time = event_time + 0
         pushEvent = PushToChannelEvent(push_event_time, f"push {df.type} to channel", df, success, failure, df.origin)
         self.GEL.addEvent(pushEvent)
-
-
-
 
     def createExpectAckEvent(self, event_time: float, df: DataFrame):
         """
@@ -290,7 +240,6 @@ class Host(object):
 
     def findExpectEvent(self, global_Id):
         # to find the expected event in the
-        # print(self.notACKedArray)
         return next(filter(lambda x: x.dataframe.global_Id == global_Id, self.notACKedArray ))
 
     def __str__(self):
