@@ -276,6 +276,7 @@ class SenseChannelEvent(Event):
         self.result_description = []
 
     def takeEffect(self, gel):
+        self.origin.status == "busy"
         self.event_id = len(gel.timeLineEvent)
         gel.current_time = self.event_time
         if gel.channel.status == "idle":

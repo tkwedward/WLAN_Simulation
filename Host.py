@@ -132,8 +132,8 @@ class Host(object):
                 success => If the channel is idle, wait for 1 DIFS (0.1 ms)
                 failure => If the channel is busy, create a countdown and then create another sense event to reduce the timer to 0.
             """
-            print("00000000000000", df)
-            print(self.blocking)
+            # print("00000000000000", df)
+            # print(self.blocking)
             self.processing_dataframe = df
 
             def success():

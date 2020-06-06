@@ -46,7 +46,7 @@ if limited:
                         _o = gel_event.get_event_information()
                         if _o:
                             objects["data"].append(_o)
-                        # print(gel_event.description())
+                        print(gel_event.description())
                         pass
             else:
                 break
