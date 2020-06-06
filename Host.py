@@ -135,6 +135,7 @@ class Host(object):
             # print("00000000000000", df)
             # print(self.blocking)
             self.processing_dataframe = df
+            self.status = "busy"
 
             def success():
                 self.createSenseChannelEvent(sense_event_time + self.DIFS, df, "df, stage 1", df.origin)
