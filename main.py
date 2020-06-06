@@ -42,7 +42,7 @@ for x in gel.host_array:
         #
     gel_event = True
 
-limited = False
+limited = True
 # limited = False
 # lower_bound = 17000
 # upper_bound = lower_bound + 500
@@ -51,48 +51,51 @@ limited = False
 # 612 packet problem start
 
 # 10653
-lower_bound = 10600
+lower_bound = 0
 
-upper_bound = lower_bound + 500
+
+upper_bound = lower_bound + 100000
 if limited:
     objects= {
         "host": [],
         "data": []
     }
     objects["host"] = [ h.name for h in gel.host_array ]
+    try:
+        with open("output.json", "w") as f:
+            for x in range(upper_bound):
+                if gel_event != None:
+                    gel_event = gel.getNextEvent()
+                    gel_event.dataframe.globalID = gel.packet_counter
+                    gel_event.takeEffect(gel)
 
-    with open("/Users/edwardtang/Project/Cheg/wlan/static/data/output.json", "w") as f:
-        for x in range(upper_bound):
-            if gel_event != None:
-                gel_event = gel.getNextEvent()
-                gel_event.dataframe.globalID = gel.packet_counter
-                gel_event.takeEffect(gel)
+                    PRINT_ALL = True
 
-                PRINT_ALL = True
+                    if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
 
-                if gel_event.__class__ in  [ScheduleDataFrameEvent, ProcessDataFrameArrivalEvent]  and gel_event.type == "internal DF" or PRINT_ALL:
+                        if x > lower_bound:
+                            _o = gel_event.get_event_information()
+                            if _o:
+                                objects["data"].append(_o)
+                            print(gel_event.description())
+                            pass
+                else:
+                    break
+            for p in gel.packet_array:
+                if p.fate == "failure":
+                    print(f"df {p.global_Id}, {p.fate}")
 
-                    if x > lower_bound:
-                        _o = gel_event.get_event_information()
-                        if _o:
-                            objects["data"].append(_o)
-                        print(gel_event.description())
-                        pass
-            else:
-                break
-        for p in gel.packet_array:
-            if p.fate == "failure":
-                print(f"df {p.global_Id}, {p.fate}")
-
-        json.dump(objects, f)
-
-
-
+            json.dump(objects, f)
+    except AttributeError:
         average_throughput = gel.calculate_throughput()
         average_delay = gel.calculate_average_network_delay()
         print(f"The average throughput is {average_throughput}, The average_dealy is {average_delay}")
+        print(NUMBER_OF_HOST)
 
-    # prin  t(objects)
+
+
+
+
 else:
     count = 0
     PRINT_ALL = False
