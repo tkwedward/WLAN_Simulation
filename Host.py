@@ -3,6 +3,7 @@ from DataFrame import DataFrame
 from Distribution import negative_exponential_distribution
 from Event import ProcessDataFrameArrivalEvent, SenseChannelEvent, PushToChannelEvent, AckExpectedEvent, SuccessTransferEvent, ScheduleDataFrameEvent, AckResultEvent
 import random
+import configparser
 from Counter import Counter
 random.seed(10)
 
@@ -13,7 +14,6 @@ class Host(object):
         self.buffer = Buffer()
         self.channel = gel.channel
         self.GEL = gel
-        self.arrivalRate = 0.8           # lambda
         self.senseTime = 0.01            # 0.01 ms
         self.DIFS = 0.1                  # 0.10 ms
         self.SIFS = 0.05                 # 0.05 ms
@@ -21,6 +21,10 @@ class Host(object):
         self.ackId = 0
         self.blocking = False
         self.processing_dataframe = ""
+
+        config = configparser.ConfigParser()
+        config.read("configuration_file.ini")
+        self.arrivalRate = float(config["DEFAULT"]["ARRIVE_RATE"]) # lambda
 
     def rba(self, collision_value):
         if collision_value == 0:
